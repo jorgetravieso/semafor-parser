@@ -1,0 +1,12 @@
+0	2	Operational_testing	test.n	3	test	0	Product	4:9
+0	3	Boundary	line.n	5	line	1	Entities	4	Boundary	5
+0	2	Existence	there.e	0_1	There 's	2	Entity	2:4
+0	3	Assistance	help.v	2	help	3	Goal	3:5	Helper	0
+0	2	Existence	there.e	1_2_3	there still are	4	Entity	5:15
+0	2	Sufficiency	enough.j	5	enough	4	Item	6
+0	2	Cause_to_make_noise	ringers.n	6	ringers	4	Agent	6
+0	3	Cause_to_make_noise	ring.v	8	ring	4	Agent	6	Sound_maker	9:15
+0	2	Increment	more.j	9	more	4	Class	10:15
+0	3	Cardinal_numbers	six.c	11	six	4	Entity	12:15	Number	11
+0	3	Cardinal_numbers	eight.c	14	eight	4	Entity	15	Number	14
+0	2	Noise_makers	bells.n	15	bells	4	Noise_maker	15
