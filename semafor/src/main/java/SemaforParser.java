@@ -1,64 +1,51 @@
-import edu.cmu.cs.lti.ark.fn.parsing.ParserDriver;
-import edu.cmu.cs.lti.ark.util.FileUtil;
-import org.apache.commons.io.FileUtils;
+import com.google.common.collect.Lists;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import edu.cmu.cs.lti.ark.fn.parsing.FrameFeatures;
+import edu.cmu.cs.lti.ark.fn.parsing.ParserDriver;
+import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
+import stanfordparser.StanfordParser;
 
 /**
- * Created by jtravieso on 7/28/15.
+ * Created by ramini on 1/18/16.
  */
 
-
-
-//-Xms4g -Xmx4g \
-
 public class SemaforParser {
-
-
     private final String MST_MODE = "server";
     private final String MST_MACHINE = "localhost";
     private final String MST_PORT = "12345";
     private final String DECODING_TYPE= "ad3";
 
-
-
     SemaforConfig config;
     ParserDriver parserDriver;
-
+    StanfordParser stanfordParser;
 
     public SemaforParser() throws IOException {
         config = SemaforConfig.getInstance();
+        stanfordParser = StanfordParser.getInstance();
         initParser();
     }
 
     public void initParser() throws IOException {
-
-         final String MODEL_DIR = config.getSemaforResource("models").getPath();                          //"/Users/jtravieso/IdeaProjects/Semafor/src/main/resources/fnmfiles/models";
-         final String GRAPH_FILE = MODEL_DIR + "/sparsegraph.gz";
-         final String STOPWORDS =  config.getSemaforResource("stopwords.txt").getPath();                  //"/Users/jtravieso/IdeaProjects/Semafor/src/main/resources/fnmfiles/stopwords.txt";
-         final String WORDNET_CONFIG_FILE = config.getSemaforResource("file_properties.xml").getPath();   //"/Users/jtravieso/IdeaProjects/Semafor/src/main/resources/fnmfiles/file_properties.xml";
-
-
-        final String tempFolder = "/Users/jtravieso/Desktop";
-        //garbage
-        // final String ALL_LEMMA_TAGS_FILE = inputFilePath + ".all.lemma.tags";
-
+        final String MODEL_DIR = config.getSemaforResource("models").getPath();
+        final String GRAPH_FILE = MODEL_DIR + "/sparsegraph.gz";
+        final String STOPWORDS =  config.getSemaforResource("stopwords.txt").getPath();
+        final String WORDNET_CONFIG_FILE = config.getSemaforResource("file_properties.xml").getPath();
+        final String tempFolder = "/Users/ramini/Desktop";
         String[] FNArgs;
         FNArgs = new String[]{
                 "mstmode:" + MST_MODE,
                 "mstserver:" + MST_MACHINE,
                 "mstport:" + MST_PORT,
-                //    "posfile:" + inputFilePath + ".pos.tagged",
-                //    "test-parsefile:" + inputFilePath + ".conll.output",
                 "stopwords-file:"+STOPWORDS,
                 "wordnet-configfile:"+ WORDNET_CONFIG_FILE,
                 "fnidreqdatafile:" + MODEL_DIR + "/reqData.jobj",
                 "goldsegfile:null",
                 "userelaxed:no",
-                //    "testtokenizedfile:" + inputFilePath + ".tokenized",
                 "idmodelfile:" + MODEL_DIR + "/idmodel.dat",
                 "alphabetfile:" + MODEL_DIR + "/parser.conf",
                 "framenet-femapfile:" + MODEL_DIR + "/framenet.frame.element.map",
@@ -66,94 +53,60 @@ public class SemaforParser {
                 "spansfile:" + tempFolder + "fnm.spans",
                 "model:" + MODEL_DIR + "/argmodel.dat",
                 "useGraph:" + GRAPH_FILE,
-                //    "frameelementsoutputfile:" + inputFilePath + ".fes",
-                //    "alllemmatagsfile:" + ALL_LEMMA_TAGS_FILE,
                 "requiresmap:" + MODEL_DIR + "/requires.map",
                 "excludesmap:" + MODEL_DIR + "/excludes.map",
                 "decoding:" + DECODING_TYPE
         };
-
-
         parserDriver = new ParserDriver(FNArgs);
     }
 
+    /**
+     * Given an input string, returns a list of FrameNet frames for that input.
+     * @param text The given input string.
+     * @return The list of FamerNet frames for the given input string.
+     */
     public List<String> findFrames(String text){
+        // Return an empty list if the input us null or empty
+        if (text == null || text.trim().isEmpty()){
+            return Lists.newArrayList();
+        }
 
         List<String> frames = new ArrayList<String>();
-        if(text == null || text.trim().isEmpty()){
-            return Collections.EMPTY_LIST;
+        // Run the Semafor parser and get the frame features
+        Set<FrameFeatures> frameFeatures = parserDriver.runParser(runPreprocessor(text));
+        // Get the frame names
+        for (FrameFeatures ff: frameFeatures) {
+            frames.add(ff.frameName);
         }
-
-        try {
-
-            //creating temp input + output file
-            File inputFile = File.createTempFile("fnmodel.input", "temp");
-            File outputFile = new File(inputFile.getPath() + ".output");
-            System.out.println("Created tempFile " + inputFile.getPath());
-            FileUtils.writeStringToFile(inputFile, text.trim());
-
-            runPreprocessor(inputFile.getPath());
-            parserDriver.runParser(inputFile.getPath(), outputFile.getPath());
-            frames = extractFromOutput(outputFile);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
         return frames;
     }
 
-    private void runPreprocessor(String inputFile) throws IOException {
-
-
-         //String semaforHome = "/Users/jtravieso/IdeaProjects/Semafor/src/main/resources/fnmfiles";
-        //String prepShell = "/Users/jtravieso/IdeaProjects/Semafor/src/main/resources/fnmfiles/preprocess.sh";
-        File prepShell = config.getPreprocessorScript();
-
-        ProcessBuilder pb = new ProcessBuilder(prepShell.getPath(), inputFile , config.getSemaforHome());
-        Process p = pb.start();
-
-        InputStream is = p.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-
-
-        //System.out.printf("Output of running %s is:", Arrays.toString(cmd));
-        String lineRead;
-        while ((lineRead = br.readLine()) != null) {
-            System.out.println(lineRead);
-        }
-
+    /**
+     * Preprocesses the given text and prepare it for frame identification.
+     * @param text The given text.
+     * @return The preprocessed text.
+     */
+    private List<PreprocessedText> runPreprocessor(String text) {
+        return stanfordParser.parse(text);
     }
 
-    public List<String> extractFromOutput(File outputFile){
-
+    /**
+     * Extracts the list of frames from the parser output, which is a list of Strings.
+     * @param parserOutput The List of strings returned by the parser as output.
+     * @return The list of frames extracted from parser output.
+     */
+    public List<String> extractFromOutput(List<String> parserOutput){
         List<String> frames = new ArrayList<String>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(outputFile));
-            String line;
-
-            while((line = in.readLine()) != null){
-                String[] split = line.split("\t");
-                if(split.length > 2){
-                    frames.add(split[2].trim().toLowerCase());
-                }
-
+        for(String line : parserOutput) {
+            String[] split = line.split("\t");
+            if (split.length > 2){
+                frames.add(split[2].trim().toLowerCase());
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
         return frames;
     }
-
-
-
-
-
-
-
 
     public static void main(String[] args) throws IOException {
         SemaforParser semafor = new SemaforParser();
@@ -162,9 +115,5 @@ public class SemaforParser {
         System.out.println(semafor.findFrames("I need help with my invoice."));
         System.out.print("\n Frame: ");
         System.out.println(semafor.findFrames("The dog is very big and is scary."));
-
     }
-
-
-
 }

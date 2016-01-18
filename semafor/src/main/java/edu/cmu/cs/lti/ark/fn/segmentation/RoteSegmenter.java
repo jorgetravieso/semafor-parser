@@ -21,6 +21,9 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.segmentation;
 
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,11 +31,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
-import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
-
-import gnu.trove.*;
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 public class RoteSegmenter
 {
@@ -572,7 +573,7 @@ public class RoteSegmenter
 			mParse.processSentence();
 			if(!tokNums.trim().equals(""))
 				tokNums=trimPrepositions(tokNums, data);
-			String line1 = getm45Line(gold,tokNums,data).trim()+"\t"+sentNum;
+			String line1 = getm45Line(gold, tokNums, data).trim()+"\t"+sentNum;
 			line1=line1.trim();
 			System.out.println(line1+"\n"+mParse.getSentence()+"\n");
 			result.add(line1.trim());
@@ -737,5 +738,30 @@ public class RoteSegmenter
 			result+=token+"_"+tokNum+"\t";
 		}
 		return result.trim();
-	}	
+	}
+
+	public String findSegmentationForTest(String parse, THashSet<String> allRelatedWords)
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		String tokNums = getHighRecallSegmentation(parse,allRelatedWords);
+		StringTokenizer st = new StringTokenizer(parse.trim(),"\t");
+		int tokensInFirstSent = new Integer(st.nextToken());
+		String[][] data = new String[6][tokensInFirstSent];
+		for(int k = 0; k < 6; k ++)
+		{
+			data[k]=new String[tokensInFirstSent];
+			for(int j = 0; j < tokensInFirstSent; j ++)
+			{
+				data[k][j]=""+st.nextToken().trim();
+			}
+		}
+		mParse = DependencyParse.processFN(data, 0.0);
+		mNodeList = DependencyParse.getIndexSortedListOfNodes(mParse);
+		mParse.processSentence();
+		if(!tokNums.trim().equals(""))
+			tokNums=trimPrepositions(tokNums, data);
+		String line1 = getTestLine("0",tokNums,data).trim()+"\t"+"1";
+		return line1.trim();
+	}
+
 }

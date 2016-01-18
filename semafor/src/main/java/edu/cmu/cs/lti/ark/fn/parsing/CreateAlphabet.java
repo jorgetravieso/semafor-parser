@@ -117,5 +117,5 @@ public class CreateAlphabet {
 		if(genAlpha){
 			DataPrep.writeFeatureIndex(FEFileName.alphafilename);
 		}
-	}	
+	}
 }

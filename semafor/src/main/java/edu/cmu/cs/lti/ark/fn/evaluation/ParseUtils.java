@@ -54,8 +54,27 @@ public class ParseUtils
 			}
 		}		
 		return result;
-	}	
-	
+	}
+
+	public static ArrayList<String> getRightInputForFrameIdentification(String segs)
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		String line = segs.trim();
+		StringTokenizer st = new StringTokenizer(line,"\t");
+		while(st.hasMoreTokens())
+		{
+			String tok = st.nextToken();
+			int lastInd = tok.lastIndexOf("#");
+			String rest = tok.substring(lastInd+1);
+			if(rest.equals("true"))	// token(s) comprise a gold target
+			{
+				String ind = tok.substring(0,lastInd);	// the token number(s) for the potential target
+				result.add("Null\t"+ind+"\t"+"0");
+			}
+		}
+		return result;
+	}
+
 	public void buildIdentificationXML(ArrayList<String> ids, ArrayList<String> originalSentences, String outFile)
 	{
 				

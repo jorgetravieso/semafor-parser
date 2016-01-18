@@ -7,16 +7,12 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Created by jtravieso on 7/29/15.
+ * Created by ramini on 1/18/16.
  */
 public class SemaforConfig {
-
-
     private final String USER_HOME = System.getProperty("user.home");
     private final String FNM_RESOURCES_FOLDER = "fnmfiles";
     private final String FNM_INSTALLATION_FOLDER = USER_HOME + "/.fnmfiles";
-
-
     private static SemaforConfig instance;
 
     public static SemaforConfig getInstance() throws IOException {
@@ -58,7 +54,5 @@ public class SemaforConfig {
         for(File c : root.listFiles()){
             setDefaultPropertiesRecursively(c);
         }
-
-
     }
 }
