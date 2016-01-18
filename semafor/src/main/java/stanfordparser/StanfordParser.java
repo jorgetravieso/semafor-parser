@@ -70,7 +70,7 @@ public class StanfordParser {
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
                 tokens.add(token.get(CoreAnnotations.TextAnnotation.class));
                 posTags.add(token.get(CoreAnnotations.PartOfSpeechAnnotation.class));
-                lemmas.add(token.get(CoreAnnotations.LemmaAnnotation.class));
+                lemmas.add(token.get(CoreAnnotations.LemmaAnnotation.class).toLowerCase());
                 namedEntities.add(token.get(CoreAnnotations.NamedEntityTagAnnotation.class));
             }
 
