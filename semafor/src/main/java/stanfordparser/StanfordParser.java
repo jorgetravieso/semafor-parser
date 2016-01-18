@@ -1,10 +1,6 @@
 package stanfordparser;
 
 import com.google.common.collect.Lists;
-
-import java.util.List;
-import java.util.Properties;
-
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -15,6 +11,10 @@ import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by ramini on 1/18/16.
@@ -39,7 +39,13 @@ public class StanfordParser {
         pipeline = new StanfordCoreNLP(props);
     }
 
-    public static List<PreprocessedText> parse (String text) {
+    class Node {
+        protected int index;
+        protected String label;
+        protected int parentIndex;
+    }
+
+    public List<PreprocessedText> parse(String text) {
         List<PreprocessedText> output = Lists.newArrayList();
         // create an empty Annotation just with the given text
         Annotation document = new Annotation(text);
@@ -51,7 +57,7 @@ public class StanfordParser {
         // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
         List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
 
-        for(CoreMap sentence: sentences) {
+        for (CoreMap sentence : sentences) {
             List<String> tokens = Lists.newArrayList();
             List<String> posTags = Lists.newArrayList();
             List<String> lemmas = Lists.newArrayList();
@@ -73,6 +79,21 @@ public class StanfordParser {
             List<Tree> children = tree.getChildrenAsList();
             // this is the Stanford dependency graph of the current sentence
             SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
+
+            dependencies.typedDependencies().stream()
+                    .map(td -> {
+                        Node node = new Node();
+                        node.index = td.dep().index();
+                        node.label = td.reln().getShortName();
+                        node.parentIndex = td.gov().index();
+                        return node;
+                    }).sorted((a, b) -> a.index - b.index)
+                    .forEach(node -> {
+                                depTreeTags.add(node.label);
+                                parentIds.add(node.parentIndex);
+                            }
+                    );
+
 
             // TODO: populate the depTreeTags
             // TODO: populate the parentIndexes
