@@ -23,8 +23,6 @@ package edu.cmu.cs.lti.ark.fn.optimization;
 
 import gnu.trove.TObjectDoubleHashMap;
 
-import java.util.ArrayList;
-
 /**
  * A model manages a couple of things.
  * It creates formulas that can be used in evaluating a function that depends on model parameters.
@@ -49,25 +47,6 @@ public abstract class LogModel {
 	protected Alphabet A;
 	protected TObjectDoubleHashMap<String> savedValues;
 	/**
-	 * The following ArrayLists store Formula and LazyLookupFormula objects for re-use 
-	 * to avoid the need to constantly create and destroy Java objects, which can be costly.
-	 */
-	protected ArrayList<LogFormula> m_savedFormulas;
-	/**
-	 * The index of the next Formula in m_savedFormulas that can be used. 
-	 */
-	public int m_current;
-	public ArrayList<LazyLookupLogFormula> m_savedLLFormulas;
-	/**
-	 * The index of the next LazyLookupFormula in m_savedLLFormulas that can be used. 
-	 */
-	public int m_llcurrent;
-
-	protected static int PARAMETER_TABLE_INITIAL_CAPACITY = 200000;
-	protected static int FORMULA_LIST_INITIAL_CAPACITY = 50000;
-	protected static int LLFORMULA_LIST_INITIAL_CAPACITY = 50000;
-	
-	/**
 	 * Gets parameter value corresponding to given index, or null if none could be found. 
 	 * @param index key to find parameter value in HashMap 
 	 * @return the value if it could be found, or null otherwise
@@ -84,36 +63,5 @@ public abstract class LogModel {
 	public LDouble getGradient(int index) {
 		return G[index];
 	}
-
-	/**
-	 * Uses given LDouble as entry in HashMap.
-	 * @param index
-	 * @param newGradient
-	 */
-	public void setGradient(int index, LDouble newGradient) {
-		if (index >= G.length) {
-			G = doubleArray(G);
-		}
-		G[index] = newGradient;		
-	}
-	
-	/**
-	 * Should be called when we run out of space in a[]. Creates a new array of 
-	 * size 2*a.length and copies all elements in a to the new array. Then returns 
-	 * the reference to the new array.  
-	 * @param a LDouble[] to be expanded
-	 */
-	private LDouble[] doubleArray(LDouble[] a) {
-		LDouble[] b = new LDouble[a.length * 2];
-		System.arraycopy(a, 0, b, 0, a.length);
-		return b;
-	}
-	
 	protected abstract double classify();
-
-	public String getReg()
-	{
-		return null;
-	}
-	
 }

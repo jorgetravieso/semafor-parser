@@ -40,18 +40,10 @@ public class SmoothedGraph implements Serializable {
 		return fineMap;
 	}
 
-	public void setFineMap(Map<String, Set<String>> fineMap) {
-		this.fineMap = fineMap;
-	}
-
 	public Map<String, Set<String>> getCoarseMap() {
 		return coarseMap;
 	}
 
-	public void setCoarseMap(Map<String, Set<String>> coarseMap) {
-		this.coarseMap = coarseMap;
-	}
-	
 	private Map<String, Set<String>> coarseMap;
 	
 	public SmoothedGraph (String file, int t) {
