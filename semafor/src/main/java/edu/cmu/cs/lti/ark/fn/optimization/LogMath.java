@@ -81,7 +81,6 @@ public class LogMath {
 		}
 	}
 
-
 	public static LDouble logtimes(LDouble lx, LDouble ly) {
 		return new LDouble(lx.value + ly.value, lx.sign == ly.sign);
 	}
@@ -94,10 +93,6 @@ public class LogMath {
 	 */
 	public static void logtimes(LDouble lx, LDouble ly, LDouble result) {
 		result.reset(lx.value + ly.value, lx.sign == ly.sign);
-	}
-
-	public static LDouble logdivide(LDouble lx, LDouble ly) {
-		return new LDouble(lx.value - ly.value, lx.sign == ly.sign);
 	}
 
 	/**
@@ -163,11 +158,6 @@ public class LogMath {
 		}
 	}
 
-	
-	public static LDouble logpower(LDouble lx, LDouble ly) {
-		return new LDouble((logexp(ly).value * lx.value), lx.sign);
-		//return logtimes(logexp(lx), ly);
-	}
 	public static void logpower(LDouble lx, LDouble ly, LDouble result) {
 		// todo: hangle sign properly
 		// if sign of lx is negative,...?
