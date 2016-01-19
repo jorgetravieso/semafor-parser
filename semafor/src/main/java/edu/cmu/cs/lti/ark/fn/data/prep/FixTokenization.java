@@ -21,62 +21,15 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.data.prep;
 
-import gnu.trove.THashMap;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 
 public class FixTokenization
 {
-	public static String replaceBritishWords(String line, THashMap<String,String> conv)
-	{
-		String revisedLine = "";
-		StringTokenizer st = new StringTokenizer(line);
-		while(st.hasMoreTokens())
-		{
-			String word = st.nextToken();
-			if(conv.get(word)!=null)
-			{
-				word = conv.get(word);
-			}
-			else
-			{
-				if(conv.get(word.toLowerCase())!=null)
-				{
-					String lookup = conv.get(word.toLowerCase());
-					if(word.charAt(0)>='A'&&word.charAt(0)<='Z')
-					{
-						char ch = lookup.toLowerCase().charAt(0);
-						char ch1 = (""+ch).toUpperCase().charAt(0);
-						word=ch1+word.substring(1);
-					}
-				}
-			}
-			revisedLine+=word+" ";
-		}
-		return revisedLine.trim();
-	}
-
-	public static THashMap<String,String> readConversions(String file)
-	{
-		ArrayList<String> list = ParsePreparation.readSentencesFromFile(file);
-		int size = list.size();
-		THashMap<String,String> map = new THashMap<String,String>();
-		for(int i = 0; i < size; i ++)
-		{
-			StringTokenizer st = new StringTokenizer(list.get(i),"\t");
-			String american = st.nextToken();
-			String british = st.nextToken();
-			map.put(british, american);
-		}
-		return map;
-	}
-
 	public static ArrayList<String> readSentencesFromFile(String file)
 	{
 		ArrayList<String> result = new ArrayList<String>();
@@ -95,25 +48,6 @@ public class FixTokenization
 			e.printStackTrace();
 		}
 		return result;
-	}	
-	
-	public static void writeDepSentencesToTempFile(String file, ArrayList<String> sentences)
-	{
-		try
-		{
-			BufferedWriter bWriter = new BufferedWriter(new FileWriter(file));
-			int size = sentences.size();
-			System.out.println("Size of sentences:"+size);
-			for(int i = 0; i < size; i ++)
-			{
-				bWriter.write(sentences.get(i).trim()+"\n\n");
-			}
-			bWriter.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 	}	
 	
 	public static void writeSentencesToTempFile(String file, ArrayList<String> sentences)

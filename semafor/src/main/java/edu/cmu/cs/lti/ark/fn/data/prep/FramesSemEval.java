@@ -45,12 +45,6 @@ public class FramesSemEval
 		"/mal2/dipanjan/experiments/FramenetParsing/semeval-2007-task19/train/NTI/WMDNews_042106.xml"
 	};
 	
-	public static final String[] testSet = {
-		"/mal2/dipanjan/experiments/FramenetParsing/dipanjan_semeval/gold_texts/ANC_IntroOfDublin.xml",
-		"/mal2/dipanjan/experiments/FramenetParsing/dipanjan_semeval/gold_texts/NTI_chinaOverview.xml",
-		"/mal2/dipanjan/experiments/FramenetParsing/dipanjan_semeval/gold_texts/NTI_workAdvances.xml"
-	};
-	
 	public static void test()
 	{
 		ArrayList<String> sentences1 = FixTokenization.readSentencesFromFile("/mal2/dipanjan/experiments/FramenetParsing/semeval-2007-task19/test/ANC/IntroOfDublin.txt");

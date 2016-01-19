@@ -41,16 +41,8 @@ public class FNConstants
 	/*
 	 * xpaths
 	 */
-	public static final String FRAME_PATH = "/frames/frame";
-	public static final String FRAME_NAME_ATTR = "name";
-	
-	public static final String LE_PATH = "/lexical-entry";
-	public static final String LE_NAME_ATTR = "name";
-
 	public static final String LU_PATH = "/lexunit-annotation";
 	public static final String LU_NAME_ATTR = "name";
 	public static final String LU_FRAME_ATTR = "frame";
-	public static final String SUB_CORPUS = "subcorpus";
-	public static final String ANNOTATION_SET = "annotationSet";
 	public static final String SENTENCE = "sentence";
 }
