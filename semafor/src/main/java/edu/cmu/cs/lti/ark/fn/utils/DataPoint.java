@@ -54,7 +54,6 @@ public class DataPoint
 	
 	/**
 	 * Maps token numbers in the sentence to corresponding character indices
-	 * @see #processOrgLine(String)
 	 * @see #getCharacterIndicesForToken(int)
 	 */
 	private THashMap<Integer,Range> tokenIndexMap;
@@ -63,75 +62,11 @@ public class DataPoint
 		
 	}
 	
-	public DataPoint(String parseLine)
-	{
-		this(buildParsesForLine(parseLine));
-	}
-	
-	public DataPoint(DependencyParse parse) {
-		this(new DependencyParses(parse));
-	}
-	public DataPoint(DependencyParse[] parses) {
-		this(new DependencyParses(parses));
-	}
 	public DataPoint(DependencyParses parses) {
 		this.parses = parses;
 	}
 	
-	/**
-	 * Given a sentence tokenized with space separators, populates tokenIndexMap with mappings 
-	 * from token numbers to strings in the format StartCharacterOffset\tEndCharacterOffset
-	 * @param orgLine
-	 */
-	public void processOrgLine(String orgLine)
-	{
-		StringTokenizer st = new StringTokenizer(orgLine.trim()," ",true);
-		tokenIndexMap = new THashMap<Integer,Range>();
-		int count = 0;
-		int tokNum = 0;
-		System.out.println(orgLine);
-		while(st.hasMoreTokens())
-		{
-			String tok = st.nextToken();
-			if(tok.equals(" "))
-			{
-				count++;
-				continue;
-			}
-			tok=tok.trim();
-			int start=count;
-			int end= count+tok.length()-1;
-			tokenIndexMap.put(tokNum, new Range0Based(start,end));
-			tokNum++;
-			count+=tok.length();
-		}
-	}
-	
-	public DataPoint(String parseLine, String frameLine)
-	{
-		this(buildParsesForLine(parseLine), frameLine);	
-		
-	}
-	
-	public DataPoint(DependencyParse[] parses, String frameLine) {
-		this(new DependencyParses(parses), frameLine);
-	}
-	
-	public DataPoint(DependencyParses parses, String frameLine)
-	{
-		this(parses,frameLine,null);
-	}
-	
-	/**
-	 * @param parses
-	 * @param frameLine
-	 * @param dataSet One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET}
-	 */
-	public DataPoint(DependencyParses parses, String frameLine, String dataSet) {
-		this.parses = parses;
-		this.dataSet = dataSet;
-		processFrameLine(frameLine);
-	}
+
 	
 	/** @param dummyInt Any value (this parameter exists merely to distinguish this from other constructors) */
 	protected DataPoint(DependencyParses parses, int dummyInt, String dataSet) {
@@ -192,45 +127,11 @@ public class DataPoint
 	{
 		return parses;
 	}
-	
-	public String getFrameName()
-	{
-		return frameName;
-	}
-	
-	/**
-	 * @return Name of the lexical unit--lemma.POS, e.g. 'cause.v'
-	 */
-	public String getLexicalUnitName() {
-		return lexicalUnitName;
-	}
-	
+
 	public int[] getTokenNums()
 	{
 		return tokenNums;
 	}
-	
-	public int getSentenceNum()
-	{
-		return sentNum;
-	}
-	
-	/**
-	 * @return An array over potential parses--for each parse, an array of nodes from the parse tree which correspond to the frame target (frame-evoking element). 
-	 * Frame targets usually consist of a single word, though they may consist of two (e.g. phrasal verbs).
-	 */
-	public DependencyParse[][] getTargetNodes() {
-		int[] targetTokenNums = getTokenNums();
-		DependencyParse[][] targetNodes = new DependencyParse[parses.size()][targetTokenNums.length];
-		for (int p=0; p<parses.size(); p++) {
-			DependencyParse[] allNodes = DependencyParse.getIndexSortedListOfNodes(parses.get(p));
-			for (int i=0; i<targetTokenNums.length; i++) {
-				targetNodes[p][i] = allNodes[targetTokenNums[i]];
-			}
-		}
-		return targetNodes;
-	}
-	
 
 	/**
 	 * @param parseFile Path to file with .sentences.all.tags extension
@@ -281,7 +182,6 @@ public class DataPoint
 		return theparses;
 	}
 	
-
 	public Node buildAnnotationSetNode(Document doc, int parentId, int num, String orgLine)
 	{
 		Node ret = doc.createElement("annotationSet");
@@ -345,7 +245,7 @@ public class DataPoint
 		}
 		return result;
 	}
-	
+
 	
 	public static final String FN13_LEXICON_EXEMPLARS = "exemplars";
 	public static final String SEMEVAL07_TRAIN_SET = "train";
@@ -435,26 +335,4 @@ public class DataPoint
 		DOCUMENT_SENTENCE_RANGES.put(SEMEVAL07_TEST_SET, testMap);
 		}
 	}
-	
-	/**
-	 * @param dataSet One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET}
-	 * @return e.g. "ANC/StephanopoulosCrimes"
-	 */
-	public static String getDocumentDescriptor(String dataSet, int sentenceIndex) {
-		for (String docDescriptor : DOCUMENT_SENTENCE_RANGES.get(dataSet).keySet()) {
-			if (DOCUMENT_SENTENCE_RANGES.get(dataSet).get(docDescriptor).contains(sentenceIndex))
-				return docDescriptor;
-		}
-		return null;
-	}
-	
-	/** @return One of {@literal "ANC"}, {@literal "NTI"}, or {@literal "PropBank"} */
-	public static String getSourceCorpus(String dataSet, int sentenceIndex) {
-		String fileDesc = getDocumentDescriptor(dataSet, sentenceIndex);
-		return fileDesc.substring(0, fileDesc.indexOf("/"));
-	}
-	
-	/** @return One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET} */
-	public String getDataSet() { return dataSet; }
-
 }

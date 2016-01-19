@@ -21,22 +21,17 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import edu.cmu.cs.lti.ark.fn.parsing.CandidateFrameElementFilters;
 import edu.cmu.cs.lti.ark.util.Interner;
 import edu.cmu.cs.lti.ark.util.XmlUtils;
@@ -44,7 +39,6 @@ import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.ds.Range;
 import edu.cmu.cs.lti.ark.util.ds.Range0Based;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParses;
-import gnu.trove.THashMap;
 
 public class DataPointWithElements extends DataPoint
 {
@@ -55,11 +49,6 @@ public class DataPointWithElements extends DataPoint
 	private String target;
 	
 	private static final String RE_FE = "(\t([^\\t]+)\t(\\d+([:]\\d+)?))";	// \t frame_name \t token_range
-	
-	public DataPointWithElements(String parseLine, String frameElementsLine)
-	{
-		this(new DependencyParses(buildParsesForLine(parseLine)), frameElementsLine, null);
-	}
 	
 	public DataPointWithElements(DependencyParses parses, String frameElementsLine, String dataSet) {
 		super(parses, 0, dataSet);
@@ -94,12 +83,6 @@ public class DataPointWithElements extends DataPoint
 		
 		Pair<String,String> portions = new Pair<String,String>(mainFramePortion, fePortion);
 		return new Pair<Integer,Pair<String,String>>(numSpans, portions);
-	}
-	
-	public static Pair<String,Integer> parseFrameNameAndSentenceNum(String frameElementsLine) {
-		Pair<Integer,Pair<String,String>> parts = decomposeFELine(frameElementsLine);
-		String mainFramePortion = parts.getSecond().getFirst();
-		return DataPoint.parseFrameNameAndSentenceNum(mainFramePortion);
 	}
 	
 	public String getTarget() {
@@ -145,46 +128,6 @@ public class DataPointWithElements extends DataPoint
 	}
 	
 	/**
-	 * Produces a frame elements line representation of a specified frame annotation. 
-	 * Result does not end in a newline.
-	 * 
-	 * @param arguments Map from role names to filler argument token ranges
-	 * @param frameName
-	 * @param lexicalUnit
-	 * @param tokenNums Token numbers for the target
-	 * @param target The target word(s), separated by spaces
-	 * @param sentNum
-	 * @return
-	 */
-	public static String makeFrameElementsLine(Map<String,Range0Based> arguments, String frameName, String lexicalUnit, int[] tokenNums, String target, int sentNum) {
-		String s = makeFrameLine(frameName, lexicalUnit, tokenNums, target, sentNum) + "\t";
-		int numNonemptySpans = 0;
-		for (Map.Entry<String,Range0Based> argument : arguments.entrySet()) {
-			Range0Based span = argument.getValue();
-			if (CandidateFrameElementFilters.isEmptySpan(span))	// unfilled FE
-				continue;
-			String rangeS = ""+span.getStart();
-			if (span.length()>1)
-				rangeS += ":" + (span.getStart()+span.length());
-			s += argument.getKey() + "\t" + rangeS + "\t";
-			numNonemptySpans++;
-		}
-		return (numNonemptySpans+1) + "\t" + s.trim();
-	}
-	
-	public int getNumSpans() {
-		return numSpans;
-	}
-	
-	/**
-	 * @return The number of spans in the sentence annotated with frame elements of this frame. 
-	 * Does not include null instantiations (INI, DNI, CNI).
-	 */
-	public int getNumOvertFrameElementFillers() {
-		return getNumSpans()-1;
-	}
-	
-	/**
 	 * @return An array listing, in the order they were annotated in the XML file, the frame element names 
 	 * (of this frame) corresponding to annotated filler spans in the sentence. The same element name may be 
 	 * listed multiple times. Elements filled by null instantiations are not included.
@@ -199,21 +142,6 @@ public class DataPointWithElements extends DataPoint
 	 */
 	public ArrayList<Range0Based> getOvertFrameElementFillerSpans() {
 		return frameElementTokenRanges;
-	}
-	
-	/**
-	 * @param feName Frame role name
-	 * @return The first filler of this role in the sentence
-	 */
-	public Range0Based getFillerSpan(String feName) {
-		int i=0;
-		for (String fe : getOvertFilledFrameElementNames()) {
-			if (fe.equals(feName)) {
-				return getOvertFrameElementFillerSpans().get(i);
-			}
-			i++;
-		}
-		return null;
 	}
 	
 	public Node buildAnnotationSetNode(Document doc, int parentId, int num, String orgLine)
@@ -250,124 +178,7 @@ public class DataPointWithElements extends DataPoint
 		
 		return node;
 	}
-	
-	/**
-	 * @param feFile Path to file with .frame.elements extension
-	 * @param parseFile Path to file with .lemma.tags extension
-	 * @return The data points listed in the specified files, i.e. the target word/phrase, its frame type and frame element fillers, 
-	 * and the sentence parse
-	 */
-	public static List<DataPointWithElements> loadAll(String feFile, String parseFile) {
-		return loadAll(feFile, parseFile, null);
-	}
-	
-	/**
-	 * @param feFile Path to file with .frame.elements extension
-	 * @param parseFile Path to file with .lemma.tags extension
-	 * @param dataSet One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET}
-	 * @return The data points listed in the specified files, i.e. the target word/phrase, its frame type and frame element fillers, 
-	 * and the sentence parse
-	 */
-	public static List<DataPointWithElements> loadAll(String feFile, String parseFile, String dataSet) {
-		return loadAll(feFile, loadAllParses(parseFile), dataSet, false);
-	}
-	
-	/**
-	 * @param feFile Path to file with .frame.elements extension
-	 * @param parseFile Path to file with .lemma.tags extension
-	 * @param dataSet One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET}
-	 * @param stripPrefix If {@literal true}, the each entry will start with "0" followed by a tab; this will be ignored.
-	 * @return The data points listed in the specified files, i.e. the target word/phrase, its frame type and frame element fillers, 
-	 * and the sentence parse
-	 */
-	public static List<DataPointWithElements> loadAll(String feFile, String parseFile, String dataSet, boolean stripPrefix) {
-		return loadAll(feFile, loadAllParses(parseFile), dataSet, stripPrefix);
-	}
-	
-	/**
-	 * @param feFile Path to file with .sentences.frame.elements extension
-	 * @param sentenceParses List of parses, with indices corresponding to sentence numbers in the frame elements file
-	 * @see loadAllParses(String)
-	 * @return
-	 */
-	public static List<DataPointWithElements> loadAll(String feFile, List<DependencyParses> sentenceParses) {
-		return loadAll(feFile, sentenceParses, null, false);
-	}
-	
-	/**
-	 * @param feFile Path to file with .sentences.frame.elements extension
-	 * @param sentenceParses List of parses, with indices corresponding to sentence numbers in the frame elements file
-	 * @param dataSet One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET}
-	 * @param stripPrefix If {@literal true}, the each entry will start with "0" followed by a tab; this will be ignored.
-	 * @see loadAllParses(String)
-	 * @return
-	 */
-	public static List<DataPointWithElements> loadAll(String feFile, List<DependencyParses> sentenceParses, String dataSet, boolean stripPrefix) {
-		List<DataPointWithElements> data = new ArrayList<DataPointWithElements>();
-		List<String> frameElementLines = ParsePreparation.readSentencesFromFile(feFile);
-		for (int l=0; l<frameElementLines.size(); l++) {
-			String frameElementsLine = frameElementLines.get(l);
-			if (stripPrefix) {
-				if (!frameElementsLine.substring(0,2).equals("0\t"))
-					System.err.println("Unexpected prefix in frame elements file: should be 0\\t, found " + frameElementsLine.substring(0,2));
-				frameElementsLine = frameElementsLine.substring(2);
-			}
-			int sentenceNum = DataPointWithElements.parseFrameNameAndSentenceNum(frameElementsLine).getSecond();
-			DependencyParses sentenceParseList = sentenceParses.get(sentenceNum);
-			DataPointWithElements dp = new DataPointWithElements(sentenceParseList, frameElementsLine, dataSet);
-			data.add(dp);
-		}
-		return data;
-	}
-	
-	/**
-	 * Loads a batch of frame parses from the specified files. {@link BufferedReader} instances will be 
-	 * created automatically if arguments are {@code null}, and closed automatically once 
-	 * the end of the files is reached. The two files must have the same number of lines.
-	 * @param feFile Path to file with .frame.elements extension
-	 * @param parseFile Path to file with .lemma.tags extension
-	 * @param n Number of data points to load
-	 * @param feReader Reader for the frame elements file stream; if {@code null}, 
-	 * will be assigned a new file stream for {@code feFile}
-	 * @param parseReader Reader for the preprocessed parse/tags file stream; if {@code null}, 
-	 * will be assigned a new file stream for {@code parseFile}
-	 * @return The next 'n' data points listed in the specified files (until the end of the file is reached)
-	 * @throws IOException 
-	 */
-	public static Pair<List<DataPointWithElements>,BufferedReader[]> loadNextN(String feFile, String parseFile, int n, BufferedReader feReader, BufferedReader parseReader) throws IOException {
-		List<DataPointWithElements> data = new ArrayList<DataPointWithElements>();
-		if (feReader==null)
-			feReader = new BufferedReader(new FileReader(feFile));
-		if (parseReader==null)
-			parseReader = new BufferedReader(new FileReader(parseFile));
-		
-		ArrayList<String> frameElementLines = ParsePreparation.readLinesFromFile(feReader, n, true);
-		Map<Integer,String> parseLines = new THashMap<Integer,String>();
-		
-		if (frameElementLines.size()<n) {
-			feReader = null;
-		}
-			
-		
-		for (int l=0; l<frameElementLines.size(); l++) {
-			String frameElementsLine = frameElementLines.get(l);
-			int sentenceNum = DataPointWithElements.parseFrameNameAndSentenceNum(frameElementsLine).getSecond();
-			String parseLine = parseLines.get(sentenceNum);
-			if (parseLine==null) {
-				parseLine = parseReader.readLine();
-				parseLines.put(sentenceNum, parseLine);
-			}
-	try {
-			DataPointWithElements dp = new DataPointWithElements(parseLine, frameElementsLine);
-			data.add(dp);
-	} catch (Exception ex) { System.out.println(parseLine); System.out.println(frameElementsLine); ex.printStackTrace(); System.exit(1); }
-			
-		}
-		
-		
-		return new Pair<List<DataPointWithElements>,BufferedReader[]>(data, new BufferedReader[]{feReader,parseReader});
-	}
-	
+
 	public static String getTokens(String sentence, int[] intNums)
 	{
 		StringTokenizer st = new StringTokenizer(sentence, " ", true);
@@ -385,5 +196,4 @@ public class DataPointWithElements extends DataPoint
 		}
 		return result.trim();
 	}
-	
 }
