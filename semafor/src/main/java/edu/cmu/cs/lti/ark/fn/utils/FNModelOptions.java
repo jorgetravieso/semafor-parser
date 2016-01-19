@@ -105,15 +105,15 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption synClusterMap = new StringOption("synclustermap");
 	public StringOption restartFile = new StringOption("restartfile");
 	public StringOption lemmaCacheFile = new StringOption("lemmacachefile");
-	
+
 	public StringOption storeInMemory = new StringOption("storeinmemory");
 	public IntOption clusterK = new IntOption("clusterk");
 	public StringOption revisedMapFile = new StringOption("revisedmapfile");
 	public StringOption useRelaxedSegmentation = new StringOption("userelaxed");
-	
+
 	public StringOption outputPredicatesFile = new StringOption("predicatesfile");
 	public StringOption useGraph = new StringOption("useGraph");
-	public StringOption mstServerMode = new StringOption("mstmode");	
+	public StringOption mstServerMode = new StringOption("mstmode");
 	public StringOption mstServerName = new StringOption("mstserver");
 	public IntOption mstServerPort = new IntOption("mstport");
 	public StringOption goldSegFile = new StringOption("goldsegfile");
