@@ -2,28 +2,22 @@ package stanfordparser;
 
 import com.google.common.collect.Lists;
 
+import org.maochen.nlp.parser.DTree;
+import org.maochen.nlp.parser.IParser;
+import org.maochen.nlp.parser.stanford.nn.StanfordNNDepParser;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.semgraph.SemanticGraph;
-import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreeCoreAnnotations;
-import edu.stanford.nlp.util.CoreMap;
 
 /**
  * Created by ramini on 1/18/16.
  */
 public class StanfordParser {
 
-    // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution
-    private final Properties props = new Properties();
-    private static StanfordCoreNLP pipeline;
+    private IParser dependencyParser;
     private static StanfordParser instance = null;
 
     public static StanfordParser getInstance() {
@@ -35,80 +29,36 @@ public class StanfordParser {
     }
 
     private StanfordParser() {
-        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
-        pipeline = new StanfordCoreNLP(props);
-    }
-
-    class Node {
-        protected int index;
-        protected String label;
-        protected int parentIndex;
+        dependencyParser = new StanfordNNDepParser(null,null,new ArrayList<>());
     }
 
     public List<PreprocessedText> parse(String text) {
         List<PreprocessedText> output = Lists.newArrayList();
-        // create an empty Annotation just with the given text
-        Annotation document = new Annotation(text);
 
-        // run all Annotators on this text
-        pipeline.annotate(document);
+        DTree depTree = dependencyParser.parse(text);
 
-        // these are all the sentences in this document
-        // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
-        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
+        List<String> tokens = depTree.stream().filter(x->!x.equals(depTree.getPaddingNode()))
+                .map(x -> x.getForm()).collect(Collectors.toList());
+        List<String> posTags = depTree.stream().filter(x->!x.equals(depTree.getPaddingNode()))
+                .map(x -> x.getPOS()).collect(Collectors.toList());
+        List<String> lemmas = depTree.stream().filter(x->!x.equals(depTree.getPaddingNode()))
+                .map(x->x.getLemma()).collect(Collectors.toList());
+        List<String> namedEntities = depTree.stream().filter(x->!x.equals(depTree.getPaddingNode()))
+                .map(x->x.getNamedEntity()).collect(Collectors.toList());
+        List<Integer> parentIds = depTree.stream().filter(x->!x.equals(depTree.getPaddingNode()))
+                .map(x -> x.getHead().getId()).collect(Collectors.toList());
+        List<String> depTreeTags = depTree.stream().filter(x -> !x.equals(depTree.getPaddingNode()))
+                .map(x -> StanfordToMst.convert(x)).collect(Collectors.toList());
 
-        for (CoreMap sentence : sentences) {
-            List<String> tokens = Lists.newArrayList();
-            List<String> posTags = Lists.newArrayList();
-            List<String> lemmas = Lists.newArrayList();
-            List<String> namedEntities = Lists.newArrayList();
-            List<String> depTreeTags = Lists.newArrayList();
-            List<Integer> parentIds = Lists.newArrayList();
-
-            // traversing the words in the current sentence
-            // a CoreLabel is a CoreMap with additional token-specific methods
-            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-                tokens.add(token.get(CoreAnnotations.TextAnnotation.class));
-                posTags.add(token.get(CoreAnnotations.PartOfSpeechAnnotation.class));
-                lemmas.add(token.get(CoreAnnotations.LemmaAnnotation.class).toLowerCase());
-                namedEntities.add(token.get(CoreAnnotations.NamedEntityTagAnnotation.class));
-            }
-
-            // this is the parse tree of the current sentence
-            Tree tree = sentence.get(TreeCoreAnnotations.TreeAnnotation.class);
-            List<Tree> children = tree.getChildrenAsList();
-            // this is the Stanford dependency graph of the current sentence
-            SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
-
-            dependencies.typedDependencies().stream()
-                    .map(td -> {
-                        Node node = new Node();
-                        node.index = td.dep().index();
-                        node.label = td.reln().getShortName();
-                        node.parentIndex = td.gov().index();
-                        return node;
-                    }).sorted((a, b) -> a.index - b.index)
-                    .forEach(node -> {
-                                depTreeTags.add(node.label);
-                                parentIds.add(node.parentIndex);
-                            }
-                    );
-
-
-            // TODO: populate the depTreeTags
-            // TODO: populate the parentIndexes
-
-            PreprocessedText ppt = new PreprocessedText();
-            ppt.setText(sentence.get(CoreAnnotations.TextAnnotation.class));
-            ppt.setTokens(tokens);
-            ppt.setPosTags(posTags);
-            ppt.setLemmas(lemmas);
-            ppt.setNamedEntities(namedEntities);
-            ppt.setDepTreeTags(depTreeTags);
-            ppt.setParentIds(parentIds);
-
-            output.add(ppt);
-        }
+        PreprocessedText ppt = new PreprocessedText();
+        ppt.setText(text);
+        ppt.setTokens(tokens);
+        ppt.setPosTags(posTags);
+        ppt.setLemmas(lemmas);
+        ppt.setNamedEntities(namedEntities);
+        ppt.setDepTreeTags(depTreeTags);
+        ppt.setParentIds(parentIds);
+        output.add(ppt);
 
         return output;
     }

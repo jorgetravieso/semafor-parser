@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import edu.cmu.cs.lti.ark.fn.parsing.FrameFeatures;
 import edu.cmu.cs.lti.ark.fn.parsing.ParserDriver;
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
 import stanfordparser.StanfordParser;
@@ -15,9 +14,6 @@ import stanfordparser.StanfordParser;
  */
 
 public class SemaforParser {
-    private final String MST_MODE = "server";
-    private final String MST_MACHINE = "localhost";
-    private final String MST_PORT = "12345";
     private final String DECODING_TYPE= "ad3";
 
     SemaforConfig config;
@@ -38,9 +34,6 @@ public class SemaforParser {
         final String tempFolder = "/Users/ramini/Desktop";
         String[] FNArgs;
         FNArgs = new String[]{
-                "mstmode:" + MST_MODE,
-                "mstserver:" + MST_MACHINE,
-                "mstport:" + MST_PORT,
                 "stopwords-file:"+STOPWORDS,
                 "wordnet-configfile:"+ WORDNET_CONFIG_FILE,
                 "fnidreqdatafile:" + MODEL_DIR + "/reqData.jobj",
@@ -73,10 +66,10 @@ public class SemaforParser {
 
         List<String> frames = new ArrayList<String>();
         // Run the Semafor parser and get the frame features
-        Set<FrameFeatures> frameFeatures = parserDriver.runParser(runPreprocessor(text));
+        Set<String> frameFeatures = parserDriver.runParser(runPreprocessor(text));
         // Get the frame names
-        for (FrameFeatures ff: frameFeatures) {
-            frames.add(ff.frameName);
+        for (String ff: frameFeatures) {
+            frames.add(ff);
         }
 
         return frames;
@@ -89,23 +82,6 @@ public class SemaforParser {
      */
     private List<PreprocessedText> runPreprocessor(String text) {
         return stanfordParser.parse(text);
-    }
-
-    /**
-     * Extracts the list of frames from the parser output, which is a list of Strings.
-     * @param parserOutput The List of strings returned by the parser as output.
-     * @return The list of frames extracted from parser output.
-     */
-    public List<String> extractFromOutput(List<String> parserOutput){
-        List<String> frames = new ArrayList<String>();
-        for(String line : parserOutput) {
-            String[] split = line.split("\t");
-            if (split.length > 2){
-                frames.add(split[2].trim().toLowerCase());
-            }
-        }
-
-        return frames;
     }
 
     public static void main(String[] args) throws IOException {

@@ -21,17 +21,15 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.segmentation;
 
+import gnu.trove.THashSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
-
-import gnu.trove.*;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 public class MoreRelaxedSegmenter
 {
@@ -40,84 +38,12 @@ public class MoreRelaxedSegmenter
 	private DependencyParse[] mNodeList = null;
 	private DependencyParse mParse = null;
 		
-	public static void main(String[] args)
-	{
-		//createM45Data();
-		RoteSegmenter seg = new RoteSegmenter();
-		seg.roteSegmentation();
-	}
-	
 	public MoreRelaxedSegmenter() {
 		mNodeList = null;
 		mParse =  null;
 	}	
 	
-	public ArrayList<String[][]> readNewParses(String file)
-	{
-		ArrayList<String> lines = ParsePreparation.readSentencesFromFile(file);
-		int size = lines.size();
-		ArrayList<String> collection = new ArrayList<String>();
-		ArrayList<String[][]> result = new ArrayList<String[][]>();
-		for(int i = 0; i < size; i ++)
-		{
-			String line = lines.get(i).trim();
-			if(line.equals(""))
-			{
-				String[][] parse = getParse(collection);
-				result.add(parse);
-				collection = new ArrayList<String>();
-			}		
-			else
-			{
-				collection.add(line);
-			}			
-		}		
-		return result;
-	}
-	
-	public String[][] getParse(ArrayList<String> collection)
-	{
-		int size = collection.size();
-		String[][] result = new String[size][];
-		for(int i = 0; i < size; i ++)
-		{
-			result[i] = new String[4];
-			String[] arr = collection.get(i).trim().split("\t");
-			result[i][0]=""+arr[5];
-			result[i][1]=""+arr[7];
-			result[i][2]=""+arr[8];
-			result[i][3]=""+arr[9];
-		}		
-		return result;
-	}
-	
-	
-	public THashSet<String> setOfParticles(THashMap<String,THashSet<String>> mFrameMap)
-	{
-		THashSet<String> result = new THashSet<String>();
-		Set<String> set = mFrameMap.keySet();
-		int count = 0;
-		for(String string:set)
-		{
-			THashSet<String> hus = mFrameMap.get(string);
-			System.out.println(count+"\t"+string);
-			count++;
-			for(String hu: hus)
-			{
-				String[] wps = hu.trim().split(" ");
-				if(wps.length==1)
-					continue;
-				String lastWord = wps[wps.length-1];
-				String[] arr = lastWord.split("_");					
-			}
-		}
-		return result;
-	}	
-	
-	
-	public String getHighRecallSegmentation(String parse, 
-												   THashSet<String> allRelatedWords)
-	{				
+	public String getHighRecallSegmentation(String parse, THashSet<String> allRelatedWords) {
 		StringTokenizer st = new StringTokenizer(parse,"\t");
 		int tokensInFirstSent = new Integer(st.nextToken());
 		String[][] data = new String[6][tokensInFirstSent];
@@ -415,18 +341,7 @@ public class MoreRelaxedSegmenter
 		return result.trim();
 	}
 	
-	public String removeSupportVerbs(String tokNum, String[][] pData, WordNetRelations mWNR, String[][] nData)
-	{
-		String result = "";
-		String[] candToks = tokNum.trim().split("\t");
-		for(String candTok: candToks)
-		{
-			
-		}
-		return result;
-	}
-	
-	public ArrayList<String> findSegmentationForTest(ArrayList<String> tokenNums, 
+	public ArrayList<String> findSegmentationForTest(ArrayList<String> tokenNums,
 			ArrayList<String> parses, 
 			THashSet<String> allRelatedWords)
 	{

@@ -114,4 +114,23 @@ public class PreprocessedText {
 
         return output.toString().trim();
     }
+
+    public String[][] toArrayPresentation() {
+        int numTokens = tokens.size();
+        String[][] data = new String[6][numTokens];
+        for(int k = 0; k < 6; k ++) {
+            data[k] = new String[numTokens];
+            for(int j = 0; j < numTokens; j ++)
+            {
+                data[0][j] = tokens.get(j);
+                data[1][j] = posTags.get(j);
+                data[2][j] = depTreeTags.get(j);
+                data[3][j] = parentIds.get(j).toString();
+                data[4][j] = namedEntities.get(j);
+                data[5][j] = lemmas.get(j);
+            }
+        }
+
+        return data;
+    }
 }
