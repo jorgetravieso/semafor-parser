@@ -44,6 +44,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.maochen.nlp</groupId>
+            <artifactId>CoreNLP-NLP</artifactId>
+            <version>1.0.15-RC1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
