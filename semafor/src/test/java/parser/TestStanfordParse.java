@@ -50,4 +50,11 @@ public class TestStanfordParse {
     }
 
 
+    @Test
+    public void testLuxuryAutomaker() {
+        String sentence = "the luxury auto maker last year sold 1,214 cars in the u.s.";
+        String expectedOut = "15\tthe\tluxury\tauto\tmaker\tlast\tyear\tsold\t1\t,\t214\tcars\tin\tthe\tu.s\t.\tDT\tNN\tNN\tNN\tJJ\tNN\tVBD\tCD\t,\tCD\tNNS\tIN\tDT\tNNS\t.\tNMOD\tNMOD\tNMOD\tSUB\tNMOD\tVMOD\tROOT\tNMOD\tP\tNMOD\tOBJ\tNMOD\tNMOD\tPMOD\tP\t4\t4\t4\t7\t6\t7\t0\t11\t11\t11\t7\t11\t14\t12\t7\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tO\tthe\tluxury\tauto\tmaker\tlast\tyear\tsell\t1\t,\t214\tcar\tin\tthe\tus\t.";
+        String stanfordOut = stanfordParser.parse(sentence).stream().findFirst().get().toString();
+        Assert.assertEquals("should be the same parse", expectedOut, stanfordOut);
+    }
 }
