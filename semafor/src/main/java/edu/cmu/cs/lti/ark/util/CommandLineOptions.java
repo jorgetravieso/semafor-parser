@@ -22,14 +22,10 @@
 package edu.cmu.cs.lti.ark.util;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import edu.cmu.cs.lti.ark.util.ds.Range;
-import edu.cmu.cs.lti.ark.util.ds.Range0Based;
-import edu.cmu.cs.lti.ark.util.ds.Range1Based;
 import edu.cmu.cs.lti.ark.util.ds.map.SingleAssignmentHashMap;
 
 /**
@@ -38,26 +34,12 @@ import edu.cmu.cs.lti.ark.util.ds.map.SingleAssignmentHashMap;
  * See the code for details.
  * 
  * @author Nathan Schneider (nschneid)
- * @since 2009-04-24: Adapted from {@link edu.cmu.cs.lti.ark.fn.identification.IdentificationOptions}
- * 2009-09-25: Made abstract, with application-specific options in {@link edu.cmu.cs.lti.ark.util.FNModelOptions}
  */
 public abstract class CommandLineOptions {
 	public class InvalidOptionsException extends Exception {
 		private static final long serialVersionUID = -4353285681883730567L;
 		public InvalidOptionsException(String s) {
 			super(s);
-		}
-	}
-	
-	public class MissingOptionsException extends InvalidOptionsException {
-		private static final long serialVersionUID = 3740404390768087830L;
-
-		public MissingOptionsException(Option requiredOption) {
-			super(String.format("Missing required argument: %s", requiredOption.name));
-		}
-
-		public MissingOptionsException(List<Option> missingOptions) {
-			super("Missing required arguments: " + StringUtil.join(optionNames(missingOptions), ", "));
 		}
 	}
 	
@@ -126,49 +108,6 @@ public abstract class CommandLineOptions {
 		}
 	}
 	
-	/** Option for a file which is to be created as output during one phase of the program and later used as input. */
-	public class IntermediateFilePathOption extends PathOption {
-		protected int status = 0;	// 1 if it should exist already (input); -1 if it should not exist yet (output)
-		public IntermediateFilePathOption(String name) { super(name); }
-		public void set(String path) throws InvalidOptionsException { 
-			if (!parentDirectoryExists(path))
-				throw new InvalidOptionsException("Parent directory of the value of '" + name + "' option does not exist: " + path);
-			else 
-				super.set(path); 
-		}
-		public IntermediateFilePathOption asInput() throws InvalidOptionsException {
-			String path = toString();
-			if (!exists(path))
-				throw new InvalidOptionsException("Path value of '" + name + "' option does not exist: " + path);
-			status = 1;
-			return this;
-		}
-		public IntermediateFilePathOption asOutput() throws InvalidOptionsException {
-			if (status>0)
-				throw new InvalidOptionsException("Cannot change from input file to output file");
-			String path = toString();
-			if (exists(path))
-				throw new InvalidOptionsException("Path value of '" + name + "' option already exists: " + path);
-			status = -1;
-			return this;
-		}
-		/** @return {@literal 1} if serving as an input file, {@literal -1} if serving as an output file, 
-		 * and {@literal 0} if the status is unknown */
-		public int getStatus() {
-			return status;
-		}
-		public String get() {
-			if (status==0)
-				System.err.println("WARNING: IntermediateFilePathOption unspecified as input or output file.");
-			return super.get();
-		}
-		public File getFile() {
-			if (status==0)
-				System.err.println("WARNING: IntermediateFilePathOption unspecified as input or output file.");
-			return super.getFile();
-		}
-	}
-	
 	public class IntOption extends Option {
 		protected Range range;
 		public int get() { return (Integer)args.get(name); }
@@ -186,12 +125,6 @@ public abstract class CommandLineOptions {
 		public String toString() { return toString(get()); }
 		public String toString(int v) { return Integer.toString(v); }
 		public String make(int v) { return make(toString(v)); }
-	}
-	public class NonnegativeIntOption extends IntOption {
-		public NonnegativeIntOption(String name) { super(name, new Range0Based(0,Integer.MAX_VALUE,true)); }
-	}
-	public class PositiveIntOption extends IntOption {
-		public PositiveIntOption(String name) { super(name, new Range1Based(1,Integer.MAX_VALUE,true)); }
 	}
 	public class DoubleOption extends Option {
 		public double get() { return (Double)args.get(name); }
@@ -216,30 +149,6 @@ public abstract class CommandLineOptions {
 	protected SingleAssignmentHashMap<String,Object> args = new SingleAssignmentHashMap<String,Object>();
 	protected Map<String,Option> opts = new SingleAssignmentHashMap<String,Option>();
 
-	/**
-	 * Given an array of command-line arguments, loads the values for various member variables 
-	 * corresponding to options. Also prints the options and their values to standard output.
-	 * Arguments should be formatted as optname:value (or simply the optname if boolean).
-	 * Unknown options trigger an error and exit by default (but see other constructor).
-	 */
-	public CommandLineOptions(String[] args)
-	{
-		this(args, false);
-	}
-	
-	
-	/**
-	 * Given an array of command-line arguments, loads the values for various member variables 
-	 * corresponding to options. Also prints the options and their arguments to standard output. 
-	 * Arguments should be formatted as optname:value (or simply the optname if boolean).
-	 * If 'ignoreUnknownOptions' is true, the presence of unknown option flags in 'args' 
-	 * will cause the constructor to print an error and exit.
-	 */
-	public CommandLineOptions(String[] args, boolean ignoreUnknownOptions)
-	{
-		init(args,ignoreUnknownOptions);
-	}
-	
 	protected CommandLineOptions() { }
 	
 	protected void init(String[] args, boolean ignoreOptions) {
@@ -275,41 +184,6 @@ public abstract class CommandLineOptions {
 		return opts.get(optName);
 	}
 
-	public Object getArgumentByOptionName(String optName) {
-		return args.get(optName);
-	}
-
-	public boolean isPresent(String optName) {
-		return args.containsKey(optName);
-	}
-
-	public void ensurePresence(Option requiredOption) throws MissingOptionsException {
-		if (requiredOption.absent()) {
-			throw new MissingOptionsException(requiredOption);
-		}
-	}
-
-	public void ensurePresence(Option[] requiredOptions) throws MissingOptionsException {
-		List<Option> missingOptions = new ArrayList<Option>();
-		for (Option opt : requiredOptions) {
-			if (opt.absent())
-				missingOptions.add(opt);
-		}
-		if (!missingOptions.isEmpty())
-			throw new MissingOptionsException(missingOptions);
-	}
-
-	public void ensurePresenceOrQuit(Option[] requiredOptions) {
-		try {
-			ensurePresence(requiredOptions);
-		}
-		catch (MissingOptionsException ex) {
-			ex.printStackTrace();
-			System.err.println("Exiting due to missing command line arguments");
-			System.exit(1);
-		}
-	}
-
 	/**
 	 * @return An iterator over ALL options (including ones without values)
 	 */
@@ -341,12 +215,4 @@ public abstract class CommandLineOptions {
 		}
 		return s.trim();
 	}
-
-	protected static List<String> optionNames(List<Option> opts) {
-		List<String> names = new ArrayList<String>();
-		for (Option opt : opts)
-			names.add(opt.name);
-		return names;
-	}
-
 }

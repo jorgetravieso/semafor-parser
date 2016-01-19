@@ -28,12 +28,9 @@ import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectDoubleHashMap;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
-import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 import edu.cmu.cs.lti.ark.util.optimization.LogFormula;
@@ -137,75 +134,6 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		return mHvCorrespondenceMap.get(lemmatizedTokens);
 	}
 	
-	public void setClusterInfo(THashMap<String,THashSet<String>> clusterMap,int K)
-	{
-		this.clusterMap=clusterMap;
-		this.K=K;
-	}
-	
-	
-	public String[] getBestFrame(String frameLine, String parseLine, boolean printConf)
-	{
-		if (!printConf) {
-			return new String[] {getBestFrame(frameLine, parseLine)};
-		}
-		double maxVal = -Double.MIN_VALUE;
-		String[] toks = frameLine.split("\t");
-		String[] tokNums = toks[1].split("_");
-		int[] intTokNums = new int[tokNums.length];
-		for(int j = 0; j < tokNums.length; j ++)
-			intTokNums[j] = new Integer(tokNums[j]);
-		Arrays.sort(intTokNums);
-		StringTokenizer st = new StringTokenizer(parseLine,"\t");
-		int tokensInFirstSent = new Integer(st.nextToken());
-		String[][] data = new String[6][tokensInFirstSent];
-		for(int k = 0; k < 6; k ++)
-		{
-			data[k]=new String[tokensInFirstSent];
-			for(int j = 0; j < tokensInFirstSent; j ++)
-			{
-				data[k][j]=""+st.nextToken().trim();
-			}
-		}	
-		Set<String> set = checkPresenceOfTokensInMap(intTokNums,data);
-		String option = null;
-		if(set==null)
-		{
-			set = mFrameMap.keySet();
-		}		
-		option = "" + set.size();
-		double sum = 0.0;
-		int count = 0;
-		Pair<String, Double>[] frames = new Pair[set.size()];
-		for(String frame: set)
-		{
-			double val =  getNumeratorValue(frame, intTokNums, data);
-			frames[count] = new Pair<String, Double>(frame, val);
-			count++;
- 			sum += val;
-			//System.out.println("Considered "+frame+" for frameLine:"+frameLine);
-		}
-		Comparator<Pair<String, Double>> c = new Comparator<Pair<String, Double>>() {
-			public int compare(Pair<String, Double> arg0,
-					Pair<String, Double> arg1) {
-				if (arg0.getSecond() > arg1.getSecond()) {
-					return -1;
-				} else if (arg0.getSecond() == arg1.getSecond()) {
-					return 0;
-				} else { 
-					return 1;
-				}
-			}			
-		};	
-		Arrays.sort(frames, c);
-		int K = frames.length < 10 ? frames.length : 10;
-		String[] results = new String[K];
-		for (int i = 0; i < K; i ++) {
-			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
-  		}
-		return results;
-	}	
-	
 	public String getBestFrame(String frameLine, String[][] data, SmoothedGraph sg)
 	{
 		String result = null;
@@ -278,48 +206,6 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		if(set==null)
 		{
 			set = mFrameMap.keySet();
-		}
-		for(String frame: set)
-		{
-			double val =  getNumeratorValue(frame, intTokNums, data);
-			if(val>maxVal)
-			{
-				maxVal = val;
-				result=""+frame;
-			}
-			//System.out.println("Considered "+frame+" for frameLine:"+frameLine);
-		}
-		return result;
-	}
-
-
-	
-	public String getBestFrame(String frameLine, String parseLine)
-	{
-		String result = null;
-		double maxVal = -Double.MIN_VALUE;
-		String[] toks = frameLine.split("\t");
-		String[] tokNums = toks[1].split("_");
-		int[] intTokNums = new int[tokNums.length];
-		for(int j = 0; j < tokNums.length; j ++)
-			intTokNums[j] = new Integer(tokNums[j]);
-		Arrays.sort(intTokNums);
-		StringTokenizer st = new StringTokenizer(parseLine,"\t");
-		int tokensInFirstSent = new Integer(st.nextToken());
-		String[][] data = new String[6][tokensInFirstSent];
-		for(int k = 0; k < 6; k ++)
-		{
-			data[k]=new String[tokensInFirstSent];
-			for(int j = 0; j < tokensInFirstSent; j ++)
-			{
-				data[k][j]=""+st.nextToken().trim();
-			}
-		}	
-		Set<String> set = checkPresenceOfTokensInMap(intTokNums,data);
-		if(set==null)
-		{
-			set = mFrameMap.keySet();
-			System.out.println("Notfound:\t"+frameLine);
 		}
 		for(String frame: set)
 		{
