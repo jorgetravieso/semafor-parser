@@ -90,6 +90,6 @@ public class SemaforParser {
         System.out.print("\n Frame: ");
         System.out.println(semafor.findFrames("I need help with my invoice."));
         System.out.print("\n Frame: ");
-        System.out.println(semafor.findFrames("The dog is very big and is scary."));
+        System.out.println(semafor.findFrames("How do you do?"));
     }
 }

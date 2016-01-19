@@ -20,10 +20,12 @@
  * with SEMAFOR 2.0.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.utils;
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Scanner;
 
-import edu.cmu.cs.lti.ark.fn.parsing.CustomOptions;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 public class LemmatizeStuff {
 	public static String infilename="semeval.fulldev.sentences.all.tags";
@@ -35,33 +37,6 @@ public class LemmatizeStuff {
 	public static final String WN_XML="wnXML";
 	public static final String IN_FILE="in";
 	public static final String OUT_FILE="out";
-	public static void main(String[] args) {
-		CustomOptions co=new CustomOptions(args);
-		if(co.isPresent(STOP_WORDS)){
-			stopWordsFile=co.get(STOP_WORDS);
-		}
-		if(co.isPresent(WN_XML)){
-			wnConfigFile=co.get(WN_XML);
-		}
-		if(co.isPresent(IN_FILE)){
-			infilename=co.get(IN_FILE);
-		}
-		if(co.isPresent(OUT_FILE)){
-			outfilename=co.get(OUT_FILE);
-		}
-		wnr = new WordNetRelations(stopWordsFile, wnConfigFile);
-		run();
-	}
-	
-	public static void lemmatize(String stopFile, String wnFile, String infile, String outfile)
-	{
-		stopWordsFile=stopFile;
-		wnConfigFile=wnFile;
-		infilename=infile;
-		outfilename=outfile;
-		wnr = new WordNetRelations(stopWordsFile, wnConfigFile);
-		run();
-	}	
 	
 	public static void run(){
 		Scanner sc=null;
