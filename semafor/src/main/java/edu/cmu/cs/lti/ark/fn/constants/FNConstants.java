@@ -36,13 +36,4 @@ public class FNConstants
     public static int m_num_corrections = 3; 
     public static boolean m_debug = true;   
     public static int save_every_k = 10;
-    
-	
-	/*
-	 * xpaths
-	 */
-	public static final String LU_PATH = "/lexunit-annotation";
-	public static final String LU_NAME_ATTR = "name";
-	public static final String LU_FRAME_ATTR = "frame";
-	public static final String SENTENCE = "sentence";
 }

@@ -21,38 +21,25 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
-
-import riso.numerical.LBFGS;
-
-import edu.cmu.cs.lti.ark.fn.constants.FNConstants;
-import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
-import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
-import edu.cmu.cs.lti.ark.util.optimization.LDouble;
-import edu.cmu.cs.lti.ark.util.optimization.LazyLookupLogFormula;
-import edu.cmu.cs.lti.ark.util.optimization.LogFormula;
-import edu.cmu.cs.lti.ark.util.optimization.LogModel;
-import edu.cmu.cs.lti.ark.util.optimization.RootLogFormula;
-import edu.cmu.cs.lti.ark.util.optimization.LDouble.IdentityElement;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectDoubleHashMap;
 import gnu.trove.TObjectIntHashMap;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
+import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
+import edu.cmu.cs.lti.ark.util.optimization.LDouble;
+import edu.cmu.cs.lti.ark.util.optimization.LDouble.IdentityElement;
+import edu.cmu.cs.lti.ark.util.optimization.LazyLookupLogFormula;
+import edu.cmu.cs.lti.ark.util.optimization.LogFormula;
+import edu.cmu.cs.lti.ark.util.optimization.LogModel;
 
 public class LRIdentificationModelSingleNode extends LogModel
 {
@@ -71,31 +58,6 @@ public class LRIdentificationModelSingleNode extends LogModel
 	protected TObjectIntHashMap<String> localA = null;
 	TObjectDoubleHashMap<String> mParamList = null;
 	private String mTrainOrTest = "train";
-		
-	/*
-	 * for training
-	 * 
-	 */
-	public LRIdentificationModelSingleNode(TObjectDoubleHashMap<String> paramList, ArrayList<String> frameLines, ArrayList<String> parseLines, String reg, double l, String initParamFile, WordNetRelations mWNR,THashMap<String,THashSet<String>> frameMap, String modelFile, String trainOrTest)
-	{
-		mParamList = paramList;
-		initializeParameterIndexes();
-		this.mFrameLines = frameLines;
-		mNumExamples = mFrameLines.size();
-		mFrameMap = frameMap;
-		initializeParameters();
-		totalNumberOfParams=paramList.size();
-		this.mParseLines = parseLines;
-		mReg=reg;
-		mLambda=l/mNumExamples;
-		mInitParamFile=initParamFile;
-		this.mWNR=mWNR;
-		resetAllGradients();
-		mFeatureCache = new THashMap<String,THashMap<String,Double>>();
-		mModelFile=modelFile;
-		mLookupChart = new TIntObjectHashMap<LogFormula>();
-		mTrainOrTest = ""+trainOrTest;
-	}	
 		
 	public LRIdentificationModelSingleNode(TObjectDoubleHashMap<String> paramList, String reg, double l, WordNetRelations mwnr, THashMap<String, THashSet<String>> frameMap)
 	{
@@ -131,56 +93,7 @@ public class LRIdentificationModelSingleNode extends LogModel
 		}
 	}	
 
-	public void resetAllGradients()
-	{
-		String[] keys = new String[mParamList.size()];
-		mParamList.keys(keys);
-		for(String param:keys)		
-		{
-			int paramIndex = localA.get(param);
-			setGradient(paramIndex, new LDouble(LDouble.IdentityElement.PLUS_IDENTITY));
-		}
-	}
-	
-	public double[] getValuesForOptimizingRoutine()
-	{
-		String[] keys = new String[mParamList.size()];
-		mParamList.keys(keys);
-		totalNumberOfParams = keys.length;
-		double[] result = new double[totalNumberOfParams];
-		int count = 0;
-		for(String param:keys)		
-		{
-			int paramIndex = localA.get(param);
-			LDouble val = getValue(paramIndex);
-			result[count]=val.exponentiate();
-			count++;
-		}
-		return result;
-	}
-	
-	public double[] getGradientsForOptimizingRoutine(boolean maximize)
-	{
-		String[] keys = new String[mParamList.size()];
-		mParamList.keys(keys);
-		totalNumberOfParams = keys.length;
-		double[] result = new double[totalNumberOfParams];
-		int count = 0;
-		double factor;
-		if(maximize)
-			factor = -1.0;
-		else
-			factor = 1.0;
-		for(String param:keys)		
-		{
-			int paramIndex = localA.get(param);
-			LDouble grad = getGradient(paramIndex);
-			result[count]=grad.exponentiate()*factor;
-			count++;
-		}
-		return result;
-	}
-	
+
 	public void setValues(double[] values)
 	{
 		String[] keys = new String[mParamList.size()];
@@ -351,17 +264,7 @@ public class LRIdentificationModelSingleNode extends LogModel
 		}
 	}
 	
-	public String getBestFrame(String frameLine, String parseLine, Reporter reporter)
-	{
-		return null;
-	}
-	
-	
-	protected LogFormula getFormula(String frameLine,String parse,Reporter reporter)
-	{
-		return null;
-	}
-	
+
 	protected LogFormula getRegularizationTerm() {
 		// (* -0.5 lambda (w . w))
 		LogFormula ret = getFormulaObject(LogFormula.Op.TIMES);
@@ -388,23 +291,7 @@ public class LRIdentificationModelSingleNode extends LogModel
 		ret.add_arg(featweightsum);
 		return ret;
 	}
-	
-	public String getTokens(String sentence, int[] intNums)
-	{
-		StringTokenizer st = new StringTokenizer(sentence, " ", true);
-		int count = 0;
-		String result="";
-		Arrays.sort(intNums);
-		while(st.hasMoreTokens())
-		{
-			String token = st.nextToken().trim();
-			if(token.equals(""))
-				continue;
-			if(Arrays.binarySearch(intNums, count)>=0)
-				result+=token+" ";
-		}
-		return result.trim();
-	}	
+
 	
 	protected LogFormula getNextFormula() {
 		// TODO Auto-generated method stub
@@ -420,129 +307,6 @@ public class LRIdentificationModelSingleNode extends LogModel
 		// TODO Auto-generated method stub
 		
 	}
-	
-	public void setParametersWhileTest(String inputFile)
-	{
-		ArrayList<String> paramLines = new ArrayList<String>();
-		try {
-			BufferedReader bReader = new BufferedReader(new FileReader(inputFile));
-			String line = null;
-			while((line=bReader.readLine())!=null)
-				paramLines.add(line);
-			bReader.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(paramLines.size()!=totalNumberOfParams)
-		{
-			System.err.println("Problem. Exiting. Size of lines:"+paramLines.size());
-			System.exit(0);
-		}
-		for(String line:paramLines)
-		{
-			StringTokenizer st = new StringTokenizer(line,"\t");
-			String param = st.nextToken();
-			double val = new Double(st.nextToken());
-			boolean sign = new Boolean(st.nextToken());
-			int paramIndex = localA.get(param);
-			setValue(paramIndex, new LDouble(val,sign));
-			setGradient(paramIndex, new LDouble(LDouble.IdentityElement.PLUS_IDENTITY));
-		}
-		System.out.println("Done setting parameters......");
-	}	
-	
-	public void optimize(String modelFile)
-	{
-		if(modelFile!=null)
-			setParametersWhileTest(modelFile);
-		try {
-			runCustomLBFGS();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void saveParameters(String outputFile)
-	{
-		String[] keys = new String[mParamList.size()];
-		mParamList.keys(keys);
-		totalNumberOfParams = keys.length;
-		try
-		{
-			BufferedWriter bWriter = new BufferedWriter(new FileWriter(outputFile));
-			for(String param:keys)		
-			{	
-				int paramIndex = localA.get(param);
-				LDouble val = getValue(paramIndex);
-				bWriter.write(param+"\t"+val+"\n");
-			}
-			bWriter.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public void runCustomLBFGS() throws Exception
-	{    
-		LogFormula.Op Type = LogFormula.Op.PLUS;
-		RootLogFormula fullLogLike = new RootLogFormula(this,Type,"lazyroot");
-		double[] diagco = new double[totalNumberOfParams];
-		int[] iprint = new int[2];
-		iprint[0] = FNConstants.m_debug?1:-1;  //output at every iteration (0 for 1st and last, -1 for never)
-		iprint[1] = 0; //output the minimum level of info
-		int[] iflag = new int[1];
-		iflag[0] = 0;
-		double[] gradient = new double[totalNumberOfParams];
-		double[] m_estimate = new double[totalNumberOfParams];
-		int iteration = 0;
-		boolean maximize = true;
-		do {
-			resetAllGradients();
-			LDouble l_value = fullLogLike.evaluateAndBackProp(this);
-			double m_value = extractFunctionValueForLBFGS(l_value, maximize);
-			System.out.println("Function Value:"+m_value);
-			gradient = getGradientsForOptimizingRoutine(maximize);
-			m_estimate = getValuesForOptimizingRoutine();
-			LBFGS.lbfgs(totalNumberOfParams,
-					FNConstants.m_num_corrections, 
-					m_estimate, 
-					m_value,
-					gradient, 
-					false, //true if we're providing the diag of cov matrix Hk0 (?)
-					diagco, //the cov matrix
-					iprint, //type of output generated
-					FNConstants.m_eps,
-					FNConstants.xtol, //estimate of machine precision
-					iflag //i don't get what this is about
-			);
-			setValues(m_estimate);
-			iteration++;
-			fullLogLike.changedParamValues();
-			if(iteration%FNConstants.save_every_k==0)
-				saveParameters(mModelFile);
-		}while (iteration <= FNConstants.m_max_its&&iflag[0] != 0);
-	}	
-	
 
-	
-	public THashMap<String,LDouble> getAllGradients(TObjectDoubleHashMap<String> paramMap)
-	{	
-		THashMap<String,LDouble> gradientMap = new THashMap<String,LDouble>();
-		String[] keys = new String[paramMap.size()];
-		paramMap.keys(keys);
-		int len = keys.length;
-		for(int i = 0; i < len; i ++)
-		{
-			int paramIndex = localA.get(keys[i]);
-			LDouble gradient = G[paramIndex];
-			gradientMap.put(keys[i], gradient);
-		}		
-		return gradientMap;
-	}
 	
 }
