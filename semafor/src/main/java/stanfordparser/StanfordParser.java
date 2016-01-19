@@ -1,6 +1,10 @@
 package stanfordparser;
 
 import com.google.common.collect.Lists;
+
+import java.util.List;
+import java.util.Properties;
+
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -11,10 +15,6 @@ import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by ramini on 1/18/16.
