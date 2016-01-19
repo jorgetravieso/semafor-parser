@@ -56,11 +56,6 @@ public class DataPointWithElements extends DataPoint
 	
 	private static final String RE_FE = "(\t([^\\t]+)\t(\\d+([:]\\d+)?))";	// \t frame_name \t token_range
 	
-	public DataPointWithElements(String parseLine, String frameElementsLine, int sentNum)
-	{
-		this(buildParsesForLineWithKBestCache(parseLine,sentNum), frameElementsLine, null);
-	}
-	
 	public DataPointWithElements(String parseLine, String frameElementsLine)
 	{
 		this(new DependencyParses(buildParsesForLine(parseLine)), frameElementsLine, null);

@@ -143,10 +143,6 @@ public class ParserDriver {
                 } else {
                     bestFrame = idModel.getBestFrame(input, data, sg);
                 }
-                //String tokenRepresentation = FrameIdentificationRelease.getTokenRepresentation(toks[1], segmenterInput);
-                //String[] split = tokenRepresentation.trim().split("\t");
-                // BestFrame\tTargetTokenNum(s)\tSentenceOffset
-                //idResult.add(1 + "\t" + bestFrame + "\t" + split[0] + "\t" + toks[1] + "\t" + split[1] + "\t" + sentNum);
                 frames.add(bestFrame);
             }
 

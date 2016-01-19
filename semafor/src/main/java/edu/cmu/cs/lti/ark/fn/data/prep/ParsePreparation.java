@@ -22,12 +22,9 @@
 package edu.cmu.cs.lti.ark.fn.data.prep;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -78,22 +75,5 @@ public class ParsePreparation
 		return result;
 	}
 
-	public static void writeSentencesToTempFile(String file, List<String> sentences)
-	{
-		try
-		{
-			BufferedWriter bWriter = new BufferedWriter(new FileWriter(file));
-			int size = sentences.size();
-			//System.out.println("Size of sentences:"+size);
-			for(int i = 0; i < size; i ++)
-			{
-				bWriter.write(sentences.get(i).trim()+"\n");
-			}
-			bWriter.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}	
+
 }

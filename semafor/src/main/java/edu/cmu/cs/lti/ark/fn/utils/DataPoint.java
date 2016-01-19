@@ -21,17 +21,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.utils;
 
-import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
-import edu.cmu.cs.lti.ark.fn.parsing.FEFileName;
-import edu.cmu.cs.lti.ark.util.Interner;
-import edu.cmu.cs.lti.ark.util.SerializedObjects;
-import edu.cmu.cs.lti.ark.util.XmlUtils;
-import edu.cmu.cs.lti.ark.util.ds.Pair;
-import edu.cmu.cs.lti.ark.util.ds.Range;
-import edu.cmu.cs.lti.ark.util.ds.Range0Based;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParses;
 import gnu.trove.THashMap;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.util.Interner;
+import edu.cmu.cs.lti.ark.util.XmlUtils;
+import edu.cmu.cs.lti.ark.util.ds.Pair;
+import edu.cmu.cs.lti.ark.util.ds.Range;
+import edu.cmu.cs.lti.ark.util.ds.Range0Based;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParses;
 
 public class DataPoint
 {
@@ -282,19 +281,7 @@ public class DataPoint
 		return theparses;
 	}
 	
-	public static DependencyParses buildParsesForLineWithKBestCache(String parseLine, int sentNum)
-	{
-		String file = FEFileName.KBestParseDirectory+"/parse_"+sentNum+".jobj";
-		DependencyParses parses = (DependencyParses)SerializedObjects.readSerializedObject(file);
-		int size = parses.size();
-		for(int i = 0; i < size; i ++)
-		{
-			DependencyParse p = parses.get(i);
-			p.processSentence();
-		}
-		return parses;
-	}
-	
+
 	public Node buildAnnotationSetNode(Document doc, int parentId, int num, String orgLine)
 	{
 		Node ret = doc.createElement("annotationSet");
@@ -469,10 +456,5 @@ public class DataPoint
 	
 	/** @return One of {@link #SEMEVAL07_TRAIN_SET}, {@link #SEMEVAL07_DEV_SET}, or {@link #SEMEVAL07_TEST_SET} */
 	public String getDataSet() { return dataSet; }
-	
-	/** @see {@link #getDocumentDescriptor(int)} */
-	public String getDocumentDescriptor() { return DataPoint.getDocumentDescriptor(getDataSet(), this.getSentenceNum()); }
-	
-	/** @see {@link #getSourceCorpus(int)} */
-	public String getSourceCorpus() { return DataPoint.getSourceCorpus(getDataSet(), this.getSentenceNum()); }
+
 }

@@ -26,7 +26,6 @@ import gnu.trove.TObjectDoubleHashMap;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.util.optimization.LDouble;
@@ -59,40 +58,5 @@ public class FrameIdentificationRelease
 			ioe.printStackTrace();
 		}
 		return startParamList;
-	}
-	
-	public static String getTokenRepresentation(String tokNum, String parse)
-	{
-		StringTokenizer st = new StringTokenizer(parse,"\t");
-		int tokensInFirstSent = new Integer(st.nextToken());
-		String[][] data = new String[5][tokensInFirstSent];
-		for(int k = 0; k < 5; k ++)
-		{
-			data[k]=new String[tokensInFirstSent];
-			for(int j = 0; j < tokensInFirstSent; j ++)
-			{
-				data[k][j]=""+st.nextToken().trim();
-			}
-		}
-		String[] tokNums = tokNum.split("_");
-		int[] intTokNums = new int[tokNums.length];
-		for(int j = 0; j < tokNums.length; j ++)
-			intTokNums[j] = new Integer(tokNums[j]);
-		Arrays.sort(intTokNums);
-
-		String actualTokens = "";
-		String firstTok = "";
-		for(int i = 0; i < intTokNums.length; i ++)
-		{
-			String lexUnit = data[0][intTokNums[i]];
-			String pos = data[1][intTokNums[i]];
-			actualTokens+=lexUnit+" ";
-			if(i==0)
-				firstTok =  lexUnit.toLowerCase()+"."+pos.substring(0,1).toLowerCase();
-		}
-		actualTokens=actualTokens.trim();
-		firstTok=firstTok.trim();
-
-		return firstTok+"\t"+actualTokens;
 	}
 }
