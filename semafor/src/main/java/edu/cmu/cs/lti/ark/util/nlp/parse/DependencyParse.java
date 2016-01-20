@@ -67,11 +67,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		
 	}
 	
-	public void setAlignment(String[] a)
-	{
-		alignment=a;
-	}
-	
 	public String getSentence()
 	{
 		return sentence;
@@ -91,11 +86,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		sentence=sentence.trim();
 	}	
 	
-	public String[] getAlignment()
-	{
-		return alignment;
-	}
-	
 	/**
 	 * @param parts An array of five strings, each having \t separated tokens: <ul>
 	 *  <li>parts[0] are the actual words</li>
@@ -110,32 +100,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 	{
 		String[][][] parseData = initFive(parts);
 		return process(parseData,logProb);
-	}
-	
-	public static String printAlignment(DependencyParse source, DependencyParse target)
-	{
-		IndexComparator ic = new IndexComparator();
-		DependencyParse[] sList = getSortedListOfNodes(source);
-		Arrays.sort(sList, ic);
-		
-		DependencyParse[] tList = getSortedListOfNodes(target);
-		Arrays.sort(tList,ic);
-		
-		int size = sList.length;
-		StringBuffer string = new StringBuffer();
-		for(int i = 0; i < size; i ++)
-		{
-			string.append(sList[i].getWord()+"("+sList[i].getAlignment()[0]+")\t");
-		}
-		string.append("\n");
-		
-		for(int i = 0; i < tList.length; i ++)
-		{
-			string.append(tList[i].getWord()+"\t");
-		}
-		string.append("\n");
-		System.out.println(string);
-		return string.toString();
 	}
 	
 	/**
@@ -182,93 +146,7 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		return parseData;
 	}
 	
-	public int getArrayIndex()
-	{
-		return arrayIndex;
-	}
-	
-	public void setArrayIndex(int i)
-	{
-		arrayIndex = i;
-	}
-	
 	/**
-	 * @return A pair of lists of nodes: the first being all left children of the current node, from left to right; 
-	 * and the second being all right children of the current node, also from left to right.
-	 */
-	public Pair<DependencyParse[],DependencyParse[]> getLeftAndRightChildren() {
-		List<DependencyParse> leftChildren = new ArrayList<DependencyParse>();
-		List<DependencyParse> rightChildren = new ArrayList<DependencyParse>();
-		for (DependencyParse child : children) {
-			if (child.getIndex()>this.getIndex())
-				rightChildren.add(child);
-			else if (child.getIndex()<this.getIndex())
-				leftChildren.add(child);
-		}
-		return new Pair<DependencyParse[],DependencyParse[]>(DependencyParse.sortNodesByIndex(leftChildren), DependencyParse.sortNodesByIndex(rightChildren));
-	}
-	
-	/**
-	 * @return A list of left children of the current node, from left to right.
-	 */
-	public DependencyParse[] getLeftChildren() {
-		return getLeftAndRightChildren().getFirst();
-	}
-	
-	/**
-	 * @return A list of right children of the current node, from left to right.
-	 */
-	public DependencyParse[] getRightChildren() {
-		return getLeftAndRightChildren().getSecond();
-	}
-	
-	/**
-	 * @return A pair of lists of nodes: the first being all left descendants of the current node, from left to right; 
-	 * and the second being all right descendants of the current node, also from left to right. If the parse is projective, 
-	 * it follows that the left (right) descendants will be children of this node, or descendants of this node's left (right) children.
-	 */
-	public Pair<DependencyParse[],DependencyParse[]> getLeftAndRightDescendants() {
-		DependencyParse[] orderedDescendants = DependencyParse.getIndexSortedListOfNodes(this);
-		List<DependencyParse> leftDescendants = new ArrayList<DependencyParse>();
-		List<DependencyParse> rightDescendants = new ArrayList<DependencyParse>();
-		for (DependencyParse desc : orderedDescendants) {	// orderedDescendants also contains the current node
-			if (desc.getIndex()>this.getIndex())
-				rightDescendants.add(desc);
-			else if (desc.getIndex()<this.getIndex())
-				leftDescendants.add(desc);
-		}
-		DependencyParse[] ldesc = new DependencyParse[0];
-		DependencyParse[] rdesc = new DependencyParse[0];
-		return new Pair<DependencyParse[],DependencyParse[]>(leftDescendants.toArray(ldesc), rightDescendants.toArray(rdesc));
-	}
-	
-	/**
-	 * @return A list of left descendants of the current node, from left to right. If the parse is projective, 
-	 * it follows that the left descendants will be children of this node, or descendants of this node's left children.
-	 */
-	public DependencyParse[] getLeftDescendants() {
-		return getLeftAndRightDescendants().getFirst();
-	}
-	
-	/**
-	 * @return A list of right descendants of the current node, from left to right. If the parse is projective, 
-	 * it follows that the right descendants will be children of this node, or descendants of this node's right children.
-	 */
-	public DependencyParse[] getRightDescendants() {
-		return getLeftAndRightDescendants().getSecond();
-	}
-	
-	public boolean isPreTerminal()
-	{
-		if(this.children.size()==0)
-			return true;
-		else
-			return false;
-	}
-	
-
-	
-	/** 
 	 * Generates DependencyParse instances from string representations returned from a parser.
 	 * Currently assumes word tokens and POS/NER tags will each have 1 series associated with them, 
 	 * whereas dependency types and parent indices may have multiple (parallel) series corresponding to 
@@ -409,16 +287,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		return dummyRoot;
 	}
 	
-	public static void printParse(DependencyParse root, String dash)
-	{
-		System.out.println(dash+"|"+"Word:"+root.getWord()+" Label:"+root.getLabelType()+":"+root.getIndex()+"\tparent:"+root.getParentIndex()+"\tlevel:"+root.getDepth());
-		List<DependencyParse> nodes=root.getChildren();
-		for(DependencyParse node : nodes)
-		{
-			printParse(node, dash+"|  ");
-		}
-	}	
-	
 	private static void processChildren(ArrayList<DependencyParse> list, DependencyParse parent)
 	{
 		int parentIndex = parent.getIndex();
@@ -441,26 +309,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 	
 	/**
 	 * @param p
-	 * @return A list of nodes in the parse, sorted descending by level (depth)
-	 * @author dipanjan 
-	 */
-	public static DependencyParse[] getSortedListOfNodes(DependencyParse p)
-	{
-		List<DependencyParse> nodeList = p.getDescendants(true);
-		
-		int size = nodeList.size();
-		DependencyParse[] parseArray = new DependencyParse[size];
-		nodeList.toArray(parseArray);
-		Arrays.sort(parseArray, new NodeComparator());
-		for(int i = 0; i < size; i ++)
-		{
-			parseArray[i].arrayIndex = i;
-		}
-		return parseArray;
-	}
-	
-	/**
-	 * @param p
 	 * @return A list of nodes in the parse, sorted ascending by index
 	 * @author dipanjan
 	 */
@@ -473,110 +321,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		nodeList.toArray(parseArray);
 		Arrays.sort(parseArray, new IndexComparator());
 		return parseArray;
-	}
-	
-	public static DependencyParse[] sortNodesByIndex(List<DependencyParse> nodes) {
-		DependencyParse[] nodeArray = new DependencyParse[nodes.size()];
-		nodes.toArray(nodeArray);
-		sortNodesByIndexInPlace(nodeArray);
-		return nodeArray;
-	}
-	
-	public static void sortNodesByIndexInPlace(DependencyParse[] nodes) {
-		Arrays.sort(nodes, new IndexComparator());
-	}
-	
-	public static void addNodesToList(DependencyParse p, ArrayList<DependencyParse> nodeList)
-	{
-		nodeList.add(p);
-		if(p.isPreTerminal())
-			return;
-		
-		List<DependencyParse> plist = p.getChildren();
-		for (DependencyParse node : plist)
-			addNodesToList(node, nodeList);
-	}
-	
-	/**
-	 * Working bottom-up in the subtree headed by {@code p}, flattens the lowest subtrees headed by non-proper nouns. 
-	 * That is, a flattened node (representing an NP head) will contain the entire NP yield in its "word" and will have no children.
-	 * @param p
-	 */
-	public static void pruneTillBaseNPs(DependencyParse p)
-	{
-		DependencyParse[] listOfNodes = getSortedListOfNodes(p);
-		int len = listOfNodes.length;
-		boolean[] marked = new boolean[len];		
-		for(int i = 0; i < len; i++)
-			marked[i]=false;
-		for(int i = 0; i < len; i ++)	// for each node in the sentence (proceeding in a bottom-up fashion), if it looks like the head of a non-proper NP try collapsing its children
-		{
-			if(marked[i])	// this is an ancestor of some already-flattened node
-				continue;
-			
-			DependencyParse node = listOfNodes[i];
-			List<DependencyParse> children = node.getChildren();
-			if(children.size()==0)
-				continue;
-			
-			String pos = node.getPOS();
-			if(!pos.startsWith("N") || pos.startsWith("NNP"))
-				continue;
-			
-			// 'node' is a non-proper noun
-			
-			DependencyParse[] localList = new DependencyParse[children.size()+1];
-			for (int j = 0; j < children.size(); j ++)
-			{
-				localList[j]=children.get(j);
-			}
-			localList[children.size()]=node;
-			
-			Arrays.sort(localList,new IndexComparator());
-			
-			// 'localList' contains 'node' and its children, sorted by word index
-			
-			String word = "";
-			for(DependencyParse n : localList) {
-				word += n.getWord()+" ";
-			}
-			word=word.trim();	// yield of the subtree headed by 'node'
-			
-			// flatten the subtree headed by 'node'
-			node.setWord(word);
-			children = new ArrayList<DependencyParse>();
-			node.setChildren(children);
-			
-			// prevent ancestors of 'node' from being flattened
-			DependencyParse par = node.getParent();
-			while(par!=null) {
-				int arrInd = par.arrayIndex;
-				marked[arrInd] = true;
-				par=par.getParent();
-			}
-		}
-		DependencyParse[] indexSortedNodes = getIndexSortedListOfNodes(p);
-		len = indexSortedNodes.length;
-		for(int i = 0; i < len; i ++)
-		{
-			indexSortedNodes[i].setIndex(i);
-		}	
-	}
-	
-	/**
-	 * Uses heuristics to find the "head" node from among a span of nodes in the parse. 
-	 * If exactly one of these ("internal") nodes has a parent outside the span, that internal node will be returned. 
-	 * Otherwise, the leftmost or rightmost node having an external parent will be returned, based on POS heuristics.
-	 * 
-	 * @param span Span of nodes whose common "head" is to be found
-	 * @return "Head" node of the span
-	 * @see #getHeuristicHead(DependencyParse[], Range0Based)
-	 * @see #getHeuristicHead(DependencyParse[], int[])
-	 */
-	public DependencyParse getHeuristicHead(Range0Based span)
-	{
-		DependencyParse[] nodes = DependencyParse.getIndexSortedListOfNodes(this);
-		return DependencyParse.getHeuristicHead(nodes, span);
 	}
 	
 	/**
