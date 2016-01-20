@@ -47,10 +47,6 @@ public class Alphabet implements Serializable
 		m_encode = new TObjectIntHashMap<String>(ALPHABET_INITIAL_CAPACITY, new TObjectIdentityHashingStrategy<String>());
 	}
 
-	public int getNumEntries() {
-		return m_decode.size();
-	}
-	
 	/**
 	 * Returns String corresponding to given integer i, or "<UNK>" if i is out of range.
 	 * @param i
@@ -62,36 +58,5 @@ public class Alphabet implements Serializable
 		else
 			return "<UNK>";
 	}
-
-	public boolean checkString(String s) {
-		String ss = m_interner.intern(s);
-		if (m_encode.containsKey(ss)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Returns int corresponding to given String s. If s has not been seen before,
-	 * adds s to m_decode and m_encode and returns the hashed index of s in m_encode. 
-	 * @param s
-	 * @return
-	 */
-	public int getInt(String s) {
-		boolean check = checkString(s);
-		String ss = m_interner.intern(s);
-		if(!check)
-		{
-			m_decode.add(ss);
-			int newind = m_decode.size();
-			m_encode.put(ss, newind);
-			return newind;
-		}
-		int ind = m_encode.get(ss);
-		return ind;		
-	}
-	
-
-} 
+}
 
