@@ -22,10 +22,8 @@
 package edu.cmu.cs.lti.ark.util.ds.path;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 
 import edu.cmu.cs.lti.ark.util.Indexer;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
@@ -154,66 +152,6 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 		return new IndexedLabeledPath<N,L>(this);
 	}
 	
-//	/** Unit tests. Run with -ea to enable assertions in the VM. */
-//	public static void main(String[] args) {
-//		IndexedLabeledPath<N,String> p1 = new IndexedLabeledPath<N,String>();
-//		IndexedLabeledPath<N,String> p2 = new IndexedLabeledPath<N,String>(new int[]{5,8}, Arrays.asList(new String[]{"x","a"}));
-//		IndexedLabeledPath<N,String> p3 = new IndexedLabeledPath<N,String>(new int[]{5,8}, Arrays.asList(new String[]{"x","a"}));
-//		IndexedLabeledPath<N,String> p4 = new IndexedLabeledPath<N,String>(new int[]{5,8}, Arrays.asList(new String[]{"y","a"}));
-//		IndexedLabeledPath<N,String> p5 = new IndexedLabeledPath<N,String>(new int[]{5,6}, Arrays.asList(new String[]{"x","a"}));
-//		IndexedLabeledPath<N,String> p6 = new IndexedLabeledPath<N,String>(new int[]{2,8}, Arrays.asList(new String[]{"x","a"}));
-//		IndexedLabeledPath<N,String> p7 = new IndexedLabeledPath<N,String>(new int[]{4,5,6}, Arrays.asList(new String[]{"z", "x", "a"}));
-//		assert (!p1.equals(p2) && p1.hashCode()!=p2.hashCode() && p1.compareTo(p2)!=0);
-//		assert (p3.equals(p2) && p3.hashCode()==p2.hashCode() && p3.compareTo(p2)==0);
-//		assert (!p4.equals(p2) && p4.hashCode()!=p2.hashCode() && p4.compareTo(p2)!=0);
-//		assert (!p5.equals(p2) && p5.hashCode()!=p2.hashCode() && p5.compareTo(p2)!=0);
-//		assert (!p6.equals(p2) && p6.hashCode()!=p2.hashCode() && p6.compareTo(p2)!=0);
-//		TreeSet<IndexedLabeledPath<N,String>> set = new TreeSet<IndexedLabeledPath<N,String>>();
-//		set.add(p7);
-//		set.add(p6);
-//		set.add(p5);
-//		set.add(p4);
-//		set.add(p3);
-//		set.add(p2);
-//		set.add(p1);
-//		assert set.toString().equals("[[], [<6, x>], [<5, z>, <6, x>], [<8, x>], [<8, x>], [<8, y>]]");
-//
-//		p1 = new IndexedLabeledPath<N,String>();
-//		p2 = new IndexedLabeledPath<N,String>(new int[]{5,8}, true, Arrays.asList(new String[]{"x"}));
-//		p3 = new IndexedLabeledPath<N,String>(new int[]{5,8}, true, Arrays.asList(new String[]{"x"}));
-//		p4 = new IndexedLabeledPath<N,String>(new int[]{5,8}, true, Arrays.asList(new String[]{"y"}));
-//		p5 = new IndexedLabeledPath<N,String>(new int[]{5,6}, true, Arrays.asList(new String[]{"x"}));
-//		p6 = new IndexedLabeledPath<N,String>(new int[]{2,8}, true, Arrays.asList(new String[]{"x"}));
-//		p7 = new IndexedLabeledPath<N,String>(new int[]{4,5,6}, true, Arrays.asList(new String[]{"z", "x"}));
-//		assert (!p1.equals(p2) && p1.hashCode()!=p2.hashCode() && p1.compareTo(p2)!=0);
-//		assert (p3.equals(p2) && p3.hashCode()==p2.hashCode() && p3.compareTo(p2)==0);
-//		assert (!p4.equals(p2) && p4.hashCode()!=p2.hashCode() && p4.compareTo(p2)!=0);
-//		assert (!p5.equals(p2) && p5.hashCode()!=p2.hashCode() && p5.compareTo(p2)!=0);
-//		assert (!p6.equals(p2) && p6.hashCode()!=p2.hashCode() && p6.compareTo(p2)!=0);
-//		set = new TreeSet<IndexedLabeledPath<N,String>>();
-//		set.add(p7);
-//		set.add(p6);
-//		set.add(p5);
-//		set.add(p4);
-//		set.add(p3);
-//		set.add(p2);
-//		set.add(p1);
-//		assert set.toString().equals("[[], [<5, null>, <6, x>], [<4, null>, <5, z>, <6, x>], [<2, null>, <8, x>], [<5, null>, <8, x>], [<5, null>, <8, y>]]");
-//
-//
-//		p2 = new IndexedLabeledPath<N,String>(new int[]{5,8}, false, Arrays.asList(new String[]{"x", "x"}));
-//		p3 = new IndexedLabeledPath<N,String>(new int[]{5,8}, true, Arrays.asList(new String[]{"x"}));
-//		set = new TreeSet<IndexedLabeledPath<N,String>>();
-//		set.add(p2);
-//		set.add(p3);
-//		assert set.toString().equals("[[<8, x>], [<5, null>, <8, x>]]");
-//
-//		p3 = new IndexedLabeledPath<N,String>(new int[]{2,5}, true, Arrays.asList(new String[]{"x"}));
-//		p3.shift(8, "x");
-//		assert p3.equals(p2);
-//
-//		System.out.println("OK");
-//	}
 
 	
 }
