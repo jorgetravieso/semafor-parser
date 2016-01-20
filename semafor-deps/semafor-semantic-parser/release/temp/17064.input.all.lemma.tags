@@ -1,9 +1,0 @@
-11	This	is	a	test	for	SEMAFOR	,	a	frame-semantic	parser	.	DT	VBZ	DT	NN	IN	NNP	,	DT	JJ	NN	.	SUB	ROOT	NMOD	PRD	NMOD	NMOD	P	NMOD	NMOD	PMOD	P	2	0	4	2	4	10	10	10	10	5	2	O	O	O	O	O	O	O	O	O	O	O	this	be	a	test	for	semafor	,	a	semantic	parser	.
-7	This	is	just	a	dummy	line	.	DT	VBZ	RB	DT	JJ	NN	.	SUB	ROOT	NMOD	NMOD	NMOD	PRD	P	2	0	6	6	6	2	2	O	O	O	O	O	O	O	this	be	just	a	dummy	line	.
-6	There	's	a	Santa	Claus	!	EX	VBZ	DT	NNP	NNP	.	SUB	ROOT	NMOD	NMOD	PRD	P	2	0	5	5	2	2	O	O	O	O	O	O	there	be	a	santa	claus	!
-7	I	need	help	with	my	invoice	.	PRP	MD	VB	IN	PRP$	NN	.	SUB	ROOT	VC	VMOD	NMOD	PMOD	P	2	0	2	3	6	4	2	O	O	O	O	O	O	O	i	need	help	with	my	invoice	.
-17	But	there	still	are	n't	enough	ringers	to	ring	more	than	six	of	the	eight	bells	.	CC	EX	RB	VBP	RB	JJ	NNS	TO	VB	JJR	IN	CD	IN	DT	CD	NNS	.	VMOD	SUB	VMOD	ROOT	VMOD	PRD	SUB	VMOD	AMOD	AMOD	AMOD	AMOD	NMOD	NMOD	NMOD	PMOD	P	4	4	4	0	4	4	9	9	6	11	6	11	11	16	16	13	4	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	but	there	still	be	not	enough	ringer	to	ring	more	than	six	of	the	eight	bell	.
-6	i	need	help	with	my	invoice	DT	NN	NN	IN	PRP$	JJ	NMOD	NMOD	ROOT	NMOD	NMOD	PMOD	3	3	0	3	6	4	O	O	O	O	O	O	i	need	help	with	my	invoice
-10	can	you	tell	me	what	is	your	invoice	id	?	MD	PRP	VB	PRP	WP	VBZ	PRP$	NN	NN	.	ROOT	SUB	VMOD	OBJ	VMOD	SBAR	NMOD	NMOD	PRD	P	0	1	1	3	3	5	9	9	6	1	O	O	O	O	O	O	O	O	O	O	can	you	tell	me	what	be	your	invoice	id	?
-5	my	invoice	id	is	20020020dhfjk	PRP$	NN	NN	VBZ	JJ	NMOD	NMOD	SUB	ROOT	PRD	3	3	4	0	4	O	O	O	O	O	my	invoice	id	be	20020020dhfjk
-17	I	have	found	this	invoice	but	it	is	showing	as	not	yet	paid	in	my	records	.	PRP	VBP	VBN	DT	NN	CC	PRP	VBZ	VBG	IN	RB	RB	VBN	IN	PRP$	NNS	.	SUB	VMOD	VC	NMOD	OBJ	VMOD	SUB	ROOT	VC	VMOD	PMOD	VMOD	VC	VMOD	NMOD	PMOD	P	2	8	2	5	3	8	8	0	8	9	10	9	9	13	16	14	8	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	O	i	have	found	this	invoice	but	it	be	show	as	not	yet	pay	in	my	record	.
