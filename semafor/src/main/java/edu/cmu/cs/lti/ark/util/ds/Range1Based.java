@@ -42,24 +42,6 @@ public class Range1Based extends Range {
 	}
 	
 	/**
-	 * Creates a new range with start and end indices computed relative to those of an existing range.
-	 * @param r Range serving as a point of reference
-	 * @param deltaStart Amount to add to the start position in the provided range
-	 * @param deltaEnd Amount to add to the end position in the provided range
-	 */
-	public Range1Based(Range r, int deltaStart, int deltaEnd) {
-		this(r.getStart()+deltaStart, r.getEnd()+deltaEnd, r.isEndInclusive());
-	}
-	
-	/**
-	 * @param startPosition
-	 * @param endPosition
-	 */
-	public Range1Based(int startPosition, int endPosition) {
-		super(1, startPosition, endPosition);
-	}
-
-	/**
 	 * @param startPosition
 	 * @param endPosition
 	 * @param isEndInclusive
@@ -68,14 +50,6 @@ public class Range1Based extends Range {
 		super(1, startPosition, endPosition, isEndInclusive);
 	}
 	
-	/**
-	 * Creates and returns a range immediately following the current range and having the specified length.
-	 * @param newLength
-	 */
-	public Range1Based successor(int newLength) {
-		return new Range1Based(this.start+this.length(), this.start+this.length()+newLength + ((this.endInclusive) ? -1 : 0), this.endInclusive);
-	}
-
 	public Range1Based clone() {
 		return new Range1Based(this.start, this.end, this.endInclusive);
 	}

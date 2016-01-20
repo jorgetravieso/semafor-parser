@@ -21,15 +21,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds.map;
 
-import edu.cmu.cs.lti.ark.util.ds.map.AbstractCounter;
-import edu.cmu.cs.lti.ark.util.ds.map.FactoryDefaultMap;
-import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
 import gnu.trove.THashSet;
 import gnu.trove.TObjectDoubleHashMap;
 import gnu.trove.TObjectDoubleIterator;
 import gnu.trove.TObjectDoubleProcedure;
 import gnu.trove.TObjectHashingStrategy;
-import gnu.trove.TObjectIntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;

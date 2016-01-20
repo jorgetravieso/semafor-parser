@@ -60,6 +60,7 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 	public IndexedLabeledPath(int[] indices, boolean includesSource, Iterable<L> labels) {
 		this(indices,includesSource,labels,false);
 	}
+
 	public IndexedLabeledPath(int[] indices, boolean includesSource, Iterable<L> labels, boolean overrideCycleCheck) {
 		super();
 		if (includesSource)
@@ -70,6 +71,7 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 		}
 		assert !labelsI.hasNext();
 	}
+
 	public IndexedLabeledPath(List<Pair<Integer, L>> entries, boolean includesSource, boolean allowCycles, boolean allowSelfLoops) {
 		super(entries, allowCycles, allowSelfLoops);
 		this._includeSource = includesSource;
@@ -81,6 +83,7 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 			items[i] = this.get(i).getFirst();
 		return items;
 	}
+
 	@Override
 	public List<Integer> indices() {
 		return getEntries();
@@ -100,10 +103,6 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 		return new IndexedLabeledPath<N,L>(this.subList(0, Math.min(this.size(), this.size()+maxLength)), 
 				this._includeSource, this._allowCycles, this._allowSelfLoops);
 	}
-	
-	
-	
-	
 	
 	@Override
 	public LabeledPath<N,L> apply(List<N> nodes) {
@@ -151,7 +150,4 @@ public class IndexedLabeledPath<N,L> extends LabeledPath<Integer,L> implements C
 	public Object clone() {
 		return new IndexedLabeledPath<N,L>(this);
 	}
-	
-
-	
 }

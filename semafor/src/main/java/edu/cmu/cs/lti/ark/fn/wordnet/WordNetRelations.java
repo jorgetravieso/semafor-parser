@@ -21,6 +21,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.wordnet;
 
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+
+import net.didion.jwnl.data.POS;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -30,14 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetAPI.RelationType;
-
-import net.didion.jwnl.data.POS;
-
-
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 
 public class WordNetRelations
 {

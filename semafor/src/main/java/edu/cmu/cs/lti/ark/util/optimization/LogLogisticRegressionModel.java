@@ -21,6 +21,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
+import gnu.trove.TDoubleArrayList;
+import gnu.trove.THashMap;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TObjectDoubleHashMap;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -28,19 +33,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
 import edu.cmu.cs.lti.ark.util.optimization.LDouble.IdentityElement;
-
 import riso.numerical.LBFGS;
-
-import gnu.trove.THashMap;
-import gnu.trove.TObjectDoubleHashMap;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TDoubleArrayList;
 
 /**
  * Defines a logistic regression model for determining whether two sentences from 

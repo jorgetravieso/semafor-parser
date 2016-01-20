@@ -21,14 +21,12 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
-
-import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
-import edu.cmu.cs.lti.ark.util.SerializedObjects;
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
 
 
 public class RequiredDataForFrameIdentification implements Serializable

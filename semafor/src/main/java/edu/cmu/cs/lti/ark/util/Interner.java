@@ -21,7 +21,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util;
 
-import java.util.*;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class Interner<T> {
 

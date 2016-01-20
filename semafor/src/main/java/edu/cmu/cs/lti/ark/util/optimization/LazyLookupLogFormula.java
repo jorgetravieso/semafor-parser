@@ -23,8 +23,6 @@ package edu.cmu.cs.lti.ark.util.optimization;
 
 import java.util.List;
 
-import edu.cmu.cs.lti.ark.util.optimization.LogFormula.Op;
-
 /**
  * Leaf node of the formula graph, for representing a parameter.
  * 

@@ -92,56 +92,6 @@ public class RoteSegmenter
 		return tokNums;
 	}
 
-    public String getHighRecallSegmentation(String parse, THashSet<String> allRelatedWords) {
-        StringTokenizer st = new StringTokenizer(parse.trim(), "\t");
-        int tokensInFirstSent = new Integer(st.nextToken());
-        String[][] data = new String[6][tokensInFirstSent];
-        for (int k = 0; k < 6; k++) {
-            data[k] = new String[tokensInFirstSent];
-            for (int j = 0; j < tokensInFirstSent; j++)
-                data[k][j] = "" + st.nextToken().trim();
-        }
-
-        ArrayList<String> startInds = new ArrayList<String>();
-        for(int i = 0; i < data[0].length; i ++)
-        {
-            startInds.add(""+i);
-        }
-        String tokNums="";
-        for(int i = MAX_LEN; i >= 1; i--)
-        {
-            for(int j = 0; j <= (data[0].length-i); j ++)
-            {
-                String ind = ""+j;
-                if(!startInds.contains(ind))
-                    continue;
-                String lTok = "";
-                for(int k = j; k < j + i; k ++)
-                {
-                    String pos = data[1][k];
-                    String cPos = pos.substring(0,1);
-                    String l = data[5][k];
-                    lTok+=l+"_"+cPos+" ";
-                }
-                lTok=lTok.trim();
-                if(allRelatedWords.contains(lTok))
-                {
-                    String tokRep = "";
-                    for(int k = j; k < j + i; k ++)
-                    {
-                        tokRep += k+" ";
-                        ind = ""+k;
-                        startInds.remove(ind);
-                    }
-                    tokRep=tokRep.trim().replaceAll(" ", "_");
-                    tokNums+=tokRep+"\t";
-                }
-            }
-        }
-        tokNums=tokNums.trim();
-        return tokNums;
-    }
-
     public String trimPrepositions(String tokNum, String[][] pData)
 	{
 		String[] candToks = tokNum.trim().split("\t");
@@ -377,45 +327,6 @@ public class RoteSegmenter
 			result+=candTok+"\t";
 		}
 		return result.trim();
-	}
-	
-	public ArrayList<String> findSegmentationForTest(ArrayList<String> tokenNums,
-			ArrayList<String> parses,
-			THashSet<String> allRelatedWords)
-	{
-		ArrayList<String> result = new ArrayList<String>();
-		for(String tokenNum: tokenNums)
-		{
-			String[] toks = tokenNum.split("\t");
-			String gold = "";
-			for(int i = 0; i < toks.length-1; i ++)
-				gold+=toks[i]+"\t";
-			gold=gold.trim();
-			int sentNum = new Integer(toks[toks.length-1]);
-			String parse = parses.get(sentNum);
-			String tokNums = getHighRecallSegmentation(parse,allRelatedWords);
-			StringTokenizer st = new StringTokenizer(parse.trim(),"\t");
-			int tokensInFirstSent = new Integer(st.nextToken());
-			String[][] data = new String[6][tokensInFirstSent];
-			for(int k = 0; k < 6; k ++)
-			{
-				data[k]=new String[tokensInFirstSent];
-				for(int j = 0; j < tokensInFirstSent; j ++)
-				{
-					data[k][j]=""+st.nextToken().trim();
-				}
-			}
-			mParse = DependencyParse.processFN(data, 0.0);
-			mNodeList = DependencyParse.getIndexSortedListOfNodes(mParse);
-			mParse.processSentence();
-			if(!tokNums.trim().equals(""))
-				tokNums=trimPrepositions(tokNums, data);
-			String line1 = getTestLine(gold,tokNums,data).trim()+"\t"+sentNum;
-			line1=line1.trim();
-			// System.out.println(line1+"\n"+mParse.getSentence()+"\n");
-			result.add(line1.trim());
-		}
-		return result;
 	}
 	
 	public String getTestLine(String goldTokens, String actualTokens, String[][] data)

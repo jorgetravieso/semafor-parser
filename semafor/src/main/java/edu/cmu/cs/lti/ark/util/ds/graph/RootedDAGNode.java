@@ -22,7 +22,6 @@
 package edu.cmu.cs.lti.ark.util.ds.graph;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -149,40 +148,6 @@ public class RootedDAGNode<N extends RootedDAGNode<N>> extends Node<N> implement
 	
 	public boolean hasChildren() {
 		return (this.children!=null && this.children.size()>0);
-	}
-
-	@Override
-	public Collection<N> getNeighbors() {
-		Collection<N> neighbors = new ArrayList<N>();
-		if (parents!=null)
-			neighbors.addAll(parents);
-		if (children!=null)
-			neighbors.addAll(children);
-		return neighbors;
-	}
-
-	@Override
-	public boolean hasNeighbors() {
-		return ((parents != null && parents.size()>0) || (children != null && children.size()>0));
-	}
-
-	@Override
-	public int numNeighbors() {
-		int n = 0;
-		if (parents!=null)
-			n += parents.size();
-		if (children!=null)
-			n += children.size();
-		return n;
-	}
-
-	@Override
-	public boolean isNeighborOf(N node) {
-		if (parents!=null && parents.indexOf(node)>-1)
-			return true;
-		if (children!=null && children.indexOf(node)>-1)
-			return true;
-		return false;
 	}
 
 	/**

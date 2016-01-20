@@ -21,13 +21,13 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import java.util.*;
+import gnu.trove.TObjectDoubleHashMap;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import edu.cmu.cs.lti.ark.util.optimization.LDouble.IdentityElement;
-
-
-import riso.numerical.LBFGS;
-import gnu.trove.*;
 
 /**
  * A model manages a couple of things.

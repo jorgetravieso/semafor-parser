@@ -21,11 +21,13 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
+import gnu.trove.TObjectIdentityHashingStrategy;
+import gnu.trove.TObjectIntHashMap;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
 
 import edu.cmu.cs.lti.ark.util.Interner;
-import gnu.trove.*;
 
 public class Alphabet implements Serializable
 {

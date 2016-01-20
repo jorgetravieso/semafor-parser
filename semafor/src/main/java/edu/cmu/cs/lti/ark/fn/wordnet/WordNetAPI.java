@@ -22,19 +22,28 @@
 package edu.cmu.cs.lti.ark.fn.wordnet;
 
 
-import net.didion.jwnl.*;
-import net.didion.jwnl.data.*;
-import net.didion.jwnl.data.list.*;
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
 
-
+import net.didion.jwnl.JWNL;
+import net.didion.jwnl.JWNLException;
+import net.didion.jwnl.data.IndexWord;
+import net.didion.jwnl.data.IndexWordSet;
+import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.PointerUtils;
+import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.data.Word;
+import net.didion.jwnl.data.list.PointerTargetNode;
+import net.didion.jwnl.data.list.PointerTargetNodeList;
 import net.didion.jwnl.dictionary.Dictionary;
 import net.didion.jwnl.dictionary.MorphologicalProcessor;
 
-
-import gnu.trove.*;
-
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Mengqiu Wang

@@ -24,10 +24,8 @@ package edu.cmu.cs.lti.ark.util.ds;
 import gnu.trove.THashSet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -73,32 +71,12 @@ public abstract class Range implements Iterable<Integer> {
 		return end;
 	}
 	
-	public int getBaseIndex() {
-		return baseIndex;
-	}
-	
-	public boolean isZeroBased() {
-		return getBaseIndex()==0;
-	}
-	
 	public boolean isEndInclusive() {
 		return endInclusive;
 	}
 	
 	public int length() {
 		return ((endInclusive) ? end-start+1 : end-start);
-	}
-	
-	public<T> List<T> applyToList(List<T> l) {
-		return l.subList(start, ((endInclusive) ? end+1 : end));
-	}
-	
-	public<T> T[] applyToArray(T[] a) {
-		return Arrays.copyOfRange(a, start, ((endInclusive) ? end+1 : end));
-	}
-	
-	public String applyToString(String s) {
-		return s.substring(start, start+length());
 	}
 	
 	/**
@@ -124,10 +102,6 @@ public abstract class Range implements Iterable<Integer> {
 		return (this.start*19+this.end*419)%29591937;
 	}
 	
-	public boolean isEquivalentTo(Range r) {
-		return (this.start==r.start && this.length()==r.length());  
-	}
-	
 	public Iterator<Integer> iterator() {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i=start; i<start+length(); i++)
@@ -145,40 +119,6 @@ public abstract class Range implements Iterable<Integer> {
 		return s;
 	}
 	
-	/**
-	 * Version of classifyByRange which accepts Map entry sets
-	 * @param <T>
-	 * @param n
-	 * @param classes
-	 * @return
-	 * @see #classifyByRange(int, java.util.Collection)
-	 */
-	public static <T> T classifyByRange(int n, Set<Map.Entry<T,Range>> classes) {
-		for (Map.Entry<T,Range> classAndRange : classes) {
-			Range r = classAndRange.getValue();
-			if (r.contains(n))
-				return classAndRange.getKey();
-		}
-		return null;
-	}
-	
-	/**
-	 * Given a group of (object, Range) pairs, find a group whose range includes 'n' 
-	 * and return the accompanying object.
-	 * @param <T>
-	 * @param n
-	 * @param classes
-	 * @return
-	 */
-	public static <T> T classifyByRange(int n, java.util.Collection<Pair<T,Range>> classes) {
-		for (Pair<T,Range> classAndRange : classes) {
-			Range r = classAndRange.getSecond();
-			if (r.contains(n))
-				return classAndRange.getFirst();
-		}
-		return null;
-	}
-	
 	public static Set<Integer> union(List<? extends Range> ranges) {
 		Set<Integer> result = new THashSet<Integer>();
 		for (Range range : ranges) {
@@ -187,34 +127,5 @@ public abstract class Range implements Iterable<Integer> {
 		}
 		return result;
 	}
-	public static Set<Integer> intersect(List<? extends Range> ranges) {
-		Set<Integer> union = union(ranges);
-		Set<Integer> result = new THashSet<Integer>();
-		for (int i : union) {
-			boolean included = true;
-			for (Range range : ranges) {
-				if (!range.contains(i)) {
-					included = false;
-					break;
-				}
-				if (included)
-					result.add(i);
-			}
-		}
-		return result;
-	}
 
-	/**
-	 * Computes the average number of ranges that include a given index, out of the union of the 
-	 * given ranges (i.e. the set of indices covered by some range).
-	 * @param ranges
-	 * @return
-	 */
-	public static double averageRangeOverlap(List<? extends Range> ranges) {
-		int totalLength = 0;
-		for (Range range : ranges) {
-			totalLength += range.length();
-		}
-		return 1.0*totalLength / union(ranges).size();
-	}
 }

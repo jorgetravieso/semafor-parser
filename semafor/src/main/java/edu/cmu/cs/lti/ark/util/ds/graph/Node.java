@@ -22,7 +22,6 @@
 package edu.cmu.cs.lti.ark.util.ds.graph;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * Abstract class for graph nodes.
@@ -73,16 +72,7 @@ public abstract class Node<T extends Node<T>> implements Serializable {
 		labelType = l;
 	}
 
-	public double getLogProb() {
-		return mLogProb;
-	}
-
 	public void setLogProb(double logProb) {
 		mLogProb = logProb;
 	}
-
-	public abstract boolean hasNeighbors();
-	public abstract int numNeighbors();
-	public abstract Collection<T> getNeighbors();
-	public abstract boolean isNeighborOf(T node);
 }

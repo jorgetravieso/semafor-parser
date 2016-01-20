@@ -21,8 +21,10 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,8 +35,6 @@ import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.IFeatureExtractor;
 import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
 
 public class FeatureExtractor implements IFeatureExtractor
 {

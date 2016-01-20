@@ -21,19 +21,14 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds.map;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import gnu.trove.THashSet;
-import gnu.trove.TObjectDoubleHashMap;
-import gnu.trove.TObjectHashingStrategy;
 import gnu.trove.TObjectIntHashMap;
 import gnu.trove.TObjectIntIterator;
 import gnu.trove.TObjectIntProcedure;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Simple integer counter: stores integer values for keys; lookup on nonexistent keys returns 0.
@@ -49,10 +44,6 @@ import gnu.trove.TObjectIntProcedure;
 public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.io.Serializable {
 	private static final long serialVersionUID = -5622820446958578575L;
 	
-	public class IntCounterFactory implements FactoryDefaultMap.DefaultValueFactory<IntCounter<T>> {
-		public IntCounter<T> newDefaultValue() { return new IntCounter<T>(); }
-	}
-	
 	protected TObjectIntHashMap<T> m_map;
 	protected int m_sum = 0;
 	
@@ -62,10 +53,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 		m_map = new TObjectIntHashMap<T>();
 	}
 	
-	public IntCounter(TObjectHashingStrategy<T> hs) {
-		m_map = new TObjectIntHashMap<T>(hs);
-	}
-	
 	public IntCounter(TObjectIntHashMap<T> map) {
 		m_map = map;
 		
@@ -73,15 +60,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 		for (int val : vals) {
 			m_sum += val;
 		}
-	}
-	
-	/**
-	 * Alias of {@link #getT(Object)}
-	 * @param key
-	 * @return The value stored for a particular key (if present), or 0 otherwise
-	 */
-	public int getCount(T key) {
-		return this.getT(key);
 	}
 	
 	/**
@@ -135,52 +113,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 	}
 	
 	/**
-	 * Iterates through the given list of keys, incrementing each by 1.
-	 * @param keys
-	 */
-	public void incrementAll(Collection<? extends T> keys) {
-		for (T key : keys) {
-			increment(key);
-		}
-	}
-	
-	public void incrementAllBy(int delta) {
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			this.incrementBy(iter.key(), delta);
-		}
-	}
-	
-	public void incrementAllBy(Collection<? extends T> keys, int delta) {
-		for (T key : keys) {
-			incrementBy(key, delta);
-		}
-	}
-	
-	public void incrementAllBy(IntCounter<? extends T> counts) {
-		for (TObjectIntIterator<? extends T> iter = counts.getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			this.incrementBy(iter.key(), iter.value());
-		}
-		if (counts.containsKey(null))
-			this.incrementBy(null, counts.getCount(null));
-	}
-	
-	/** 
-	 * Returns a new counter containing only keys with nonzero values in 
-	 * either this or 'that'. Each key's value is 2 if it occurs in both 
-	 * this and 'that' or 1 otherwise.
-	 */
-	public IntCounter<T> orWith(IntCounter<? extends T> that) {
-		List<IntCounter<? extends T>> list = new ArrayList<IntCounter<? extends T>>();
-		list.add(this);
-		list.add(that);
-		return or(list);
-	}
-	
-	/** 
 	 * Returns a new counter containing only keys with nonzero values in 
 	 * at least one of the provided counters. Each key's value is the 
 	 * number of counters in which it occurs.
@@ -194,22 +126,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 				if (iter.value()!=0)
 					result.increment(iter.key());
 			}
-		}
-		return result;
-	}
-	
-	/** 
-	 * Returns a new counter containing only keys with nonzero values in 
-	 * both this and 'that'. Each key's value is the sum of its corresponding 
-	 * values in this and 'that'.
-	 */
-	public IntCounter<T> andWith(IntCounter<T> that) {
-		IntCounter<T> result = new IntCounter<T>();
-		for (TObjectIntIterator<T> iter = this.getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			if (iter.value()!=0 && that.getCount(iter.key())!=0)
-				result.set(iter.key(), iter.value() + that.getCount(iter.key()));
 		}
 		return result;
 	}
@@ -235,107 +151,11 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 		return result;
 	}
 	
-	public IntCounter<T> addAll(IntCounter<? extends T> counts) {
-		IntCounter<T> result = this.clone();
-		result.incrementAllBy(counts);
-		return result;
-	}
-	
-	/**
-	 * @return A new Counter instance with the values in this IntCounter divided by their sum
-	 */
-	public Counter<T> normalize() {
-		return divideBy(m_sum);
-	}
-	
-	/**
-	 * Equivalent to {@link #scaleBy(double)} called with 1.0/{@code denominator}
-	 * @param denominator
-	 * @return
-	 */
-	public Counter<T> divideBy(double denominator) {
-		return scaleBy(1.0/denominator);
-	}
-	
-	/**
-	 * For each entry in this counter, looks up the corresponding entry in {@code that} 
-	 * and stores their ratio in the result.
-	 * @param that
-	 */
-	public Counter<T> divideAllBy(final Counter<? super T> that) {
-		final Counter<T> result = new Counter<T>();
-		m_map.forEachEntry(new TObjectIntProcedure<T>() {
-            private boolean first = true;
-            public boolean execute(T key, int value) {
-            	if ( first ) first = false;
-            	double newValue = value / that.getT(key);
-	            result.set(key, newValue);
-                return true;
-            }
-        });
-		return result;
-	}
-	
-	/**
-	 * @param factor Scaling factor to be multiplied by each value in this counter
-	 * @return A new Counter instance equivalent to this one, but with scaled values
-	 */
-	public IntCounter<T> scaleBy(int factor) {
-		IntCounter<T> result = new IntCounter<T>();
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			result.set(iter.key(), iter.value() * factor);
-		}
-		if (containsKey(null))
-			result.set(null, getT(null)*factor);
-		return result;
-	}
-	
-	/**
-	 * @param factor Scaling factor to be multiplied by each value in this counter
-	 * @return A new Counter instance equivalent to this one, but with scaled values
-	 */
-	public Counter<T> scaleBy(double factor) {
-		Counter<T> result = new Counter<T>();
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			result.set(iter.key(), iter.value() * factor);
-		}
-		if (containsKey(null))
-			result.set(null, getT(null)*factor);
-		return result;
-	}
-	
-	/**
-	 * For each entry in this counter, looks up the corresponding entry in {@code that} 
-	 * and stores their product in the result.
-	 * @param that
-	 */
-	public Counter<T> scaleAllBy(final Counter<T> that) {
-		final Counter<T> result = new Counter<T>();
-		m_map.forEachEntry(new TObjectIntProcedure<T>() {
-            private boolean first = true;
-            public boolean execute(T key, int value) {
-            	if ( first ) first = false;
-            	double newValue = value * that.getT(key);
-	            result.set(key, newValue);
-                return true;
-            }
-        });
-		return result;
-	}
-	
 	/**
 	 * @return Iterator for the counter. Ignores the {@code null} key (if present).
 	 */
 	public TObjectIntIterator<T> getIterator() {
 		return m_map.iterator();
-	}
-	
-	public T[] keys(T[] array) {
-		return m_map.keys(array);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -346,26 +166,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 			keyset.add((T)o);
 		}
 		return keyset;
-	}
-	
-	/**
-	 * @param valueThreshold
-	 * @return Set of keys whose corresponding value equals or exceeds the given threshold
-	 */
-	public Set<T> filteredKeys(int valueThreshold) {
-		Set<T> result = new THashSet<T>();
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			T key = iter.key();
-			int value = getT(key);
-			if (value >= valueThreshold) {
-				result.add(key);
-			}
-		}
-		if (containsKey(null) && getT(null) >= valueThreshold)
-			result.add(null);
-		return result;
 	}
 	
 	/**
@@ -396,22 +196,6 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 	}
 	public boolean containsKeyT(T key) {
 		return m_map.containsKey(key);
-	}
-	
-	/**
-	 * @return A map from unique values in this IntCounter to the number of distinct keys with which they are associated
-	 */
-	public IntCounter<Integer> getHistogram() {
-		IntCounter<Integer> histogram = new IntCounter<Integer>();
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			int value = iter.value();
-			histogram.increment(value);
-		}
-		if (containsKey(null))
-			histogram.increment(getT(null));
-		return histogram;
 	}
 	
 	public int size() {
@@ -469,72 +253,7 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
         return buf.toString();
     }
     
-    /** @see {@link #toStringWithPercents(int, double, String[], int)} */
-    public String toStringWithPercents(String[] sep, int precision) {
-    	return toStringWithPercents(Integer.MIN_VALUE, Double.MIN_VALUE, sep, precision);
-    }
-    
-    /**
-	 * @param valueThreshold
-	 * @param percentThreshold
-	 * @param sep Array with three Strings: a value-percent separator ({@literal " "} by default, if this is {@literal null}}; 
-	 * an entry separator ({@literal "%,"} by default, if this is {@literal null}); and a key-value separator ({@literal "="} by default)
-	 * @param precision Number of decimal places to display for the percent
-	 * @return A string representation of all (key, value) pairs such that the value equals or exceeds the given threshold
-	 */
-    public String toStringWithPercents(final int valueThreshold, final double percentThreshold, String[] sep, int precision) {
-    	String percSep = " "; // default
-    	String entrySep = "%,";	// default
-		String kvSep = "=";	// default
-		if (sep!=null && sep.length>0) {
-			if (sep[0]!=null) 
-				percSep = sep[0];
-			if (sep.length>1 && sep[1]!=null) {
-				entrySep = sep[1];
-				if (sep.length>2 && sep[2]!=null)
-					kvSep = sep[2];
-			}
-		}
-		final String PERCSEP = percSep;
-		final String ENTRYSEP = entrySep;
-		final String KVSEP = kvSep;
-		final int PRECISION = precision;
-		final int SUM = getSum();
-        final StringBuilder buf = new StringBuilder("{");
-        m_map.forEachEntry(new TObjectIntProcedure<T>() {
-            private boolean first = true;
-            public boolean execute(T key, int value) {
-            	double percent = 100.0*value / SUM;
-            	if (value >= valueThreshold && percent >= percentThreshold) {
-	                if ( first ) first = false;
-	                else buf.append(ENTRYSEP);
-	
-	                buf.append(key);
-	                buf.append(KVSEP);
-	                buf.append(value);
-	                buf.append(PERCSEP);
-	                buf.append(String.format("%." + PRECISION + "f", percent));
-            	}
-            	return true;
-            }
-        });
-        buf.append("}");
-        return buf.toString();
-    }
-	
-	public Counter<T> toCounter() {
-		TObjectDoubleHashMap<T> map = new TObjectDoubleHashMap<T>();
-		for (TObjectIntIterator<T> iter = getIterator();
-				iter.hasNext();) {
-			iter.advance();
-			map.put(iter.key(), (double)iter.value());
-		}
-		if (containsKey(null))
-			map.put(null, (double)getT(null));
-		return new Counter<T>(map);
-	}
-	
-	public IntCounter<T> clone() {
+    public IntCounter<T> clone() {
 		return new IntCounter<T>(m_map.clone());
 	}
 
@@ -578,24 +297,5 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
 	@Override
 	public Collection<Integer> values() {
 		throw new UnsupportedOperationException("IntCounter.values() unsupported");
-	}
-	
-	/**
-	 * Computes the sum of products of key-value pairs in {@code that}
-	 * @param that
-	 * @return
-	 */
-	public static int sumOfProducts(IntCounter<Integer> that) {
-		final int[] result = new int[1];	// use a single-element array to make this variable 'final'
-		result[0] = 0;
-		that.m_map.forEachEntry(new TObjectIntProcedure<Integer>() {
-            private boolean first = true;
-            public boolean execute(Integer key, int value) {
-            	if ( first ) first = false;
-            	result[0] += key * value;
-                return true;
-            }
-        });
-		return result[0];
 	}
 }

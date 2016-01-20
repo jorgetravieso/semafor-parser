@@ -21,12 +21,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntHashSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Root node of the formula graph.
@@ -70,80 +69,11 @@ public class RootLogFormula extends LogFormula {
 		initCommon(INITIAL_CAPACITY);		
 	}
 
-	public RootLogFormula(LogModel m, Op o, String name, int batchsize) {
-		super(o, name);
-		m_owner = m;
-		initCommon(INITIAL_CAPACITY, batchsize);
-	}
-
-	private void initCommon(int capacity, int batchsize) {
-		m_paramIndices = new TIntHashSet();
-		m_onceThrough = false;
-		m_savedFunctionValues = new LDouble[batchsize];
-		for (int i = 0; i < batchsize; i++) {
-			m_savedFunctionValues[i] = new LDouble();
-		}
-	}
-
 	private void initCommon(int capacity) {
 		m_paramIndices = new TIntHashSet();
 		m_onceThrough = false;
 	}
 		
-	/**
-	 * Traverses the formula tree and finds all LazyLookupFormula nodes, collecting 
-	 * them together into a List, which is returned.
-	 * @return
-	 */
-	public int[] getParameterIndicesArray() {
-		return m_paramIndicesArray;
-	}
-	
-	protected void shuffleData(int size) {
-		Random rgen = new Random(System.currentTimeMillis());
-		
-		ArrayList<Integer> nums = new ArrayList<Integer>();
-		for (int i = 0; i < size; i++) {
-			nums.add(i);
-		}
-		// now, remove all the elements from nums in random order
-		while (nums.size() > 0) {
-			int next = rgen.nextInt(nums.size());
-			m_shuffledIndices.add(nums.get(next));
-			nums.remove(next);
-		}		
-	}
-
-	/**
-	 * Creates a new node in the tree that's the next child of this node with the given name. 
-	 * @param o Operation for the new formula
-	 * @param name Name for the new node
-	 * @return a reference to the Formula Object just created
-	 */	
-	/*public Formula new_arg(Op o, String name) {
-		Formula f = new Formula(o, name);
-		m_args.add(f);
-		if (o == Op.LOOKUP) {
-			List<Integer> inds = f.getParameterIndices();
-			for (int i = 0; i < inds.size(); i++) {
-				m_paramIndices.add(inds.get(i));
-			}
-		}
-		return m_args.get(m_args.size() - 1);
-	}*/
-
-	/**
-	 * Adds the given node as a child of this node.  
-	 * @param f Formula to add as a child
-	 */
-	/*public void add_arg(Formula f) {
-		m_args.add(f);
-		List<Integer> inds = f.getParameterIndices();
-		for (int i = 0; i < inds.size(); i++) {
-			m_paramIndices.add(inds.get(i));
-		}
-	}*/
-	
 	/**
 	 * Subclasses of RootFormula should override this method to supply methods like evaluate() and 
 	 * backprop() with a formula for the next training example. The returned Formula should be 
@@ -284,68 +214,6 @@ public class RootLogFormula extends LogFormula {
         }
 	}
 	
-	public LDouble evaluateAndBackProp(LogModel m) {
-		if (m_valueComputed) return m_value;
-		switch (m_operation) {
-		case TIMES:
-			m_value = new LDouble(LDouble.IdentityElement.TIMES_IDENTITY);
-			int num = m.getNumTrainingExamples();
-			for(int k = 0; k < num; k ++)
-			{
-				LogFormula f = m.getFormula(k);
-				LogMath.logtimes(m_value, f.evaluate(m_owner), m_value);
-			}
-			if (m_value.notEqualsZero())
-			{
-				for(int k = 0; k < num; k ++)
-				{
-					LogFormula f = m.getFormula(k);
-					LDouble temp = new LDouble();
-					LogMath.logdivide(m_value, f.evaluate(m), temp);
-					f.backprop(m, temp);
-				}
-			}
-			break;
-		case PLUS:
-			m_value = new LDouble(LDouble.IdentityElement.PLUS_IDENTITY);
-			num = m.getNumTrainingExamples();
-			for(int k = 0; k < num; k ++)
-			{
-				LogFormula f = m.getFormula(k);
-				LogMath.logplus(m_value, f.evaluate(m_owner), m_value);
-				System.out.println(k+" value:"+f.evaluate(m_owner).exponentiate());
-				f.backprop(m, new LDouble(LDouble.IdentityElement.TIMES_IDENTITY));
-			}
-			System.out.println();
-			break;
-		case DIVIDE:
-			System.out.println("Can't use division with a RootFormula.");
-			break;
-		case MINUS:
-			System.out.println("Can't use minus with a RootFormula.");
-			break;
-		case NEG:
-			System.out.println("Can't use negation with a RootFormula.");
-			break;
-		case EXP:
-			System.out.println("Can't use exp() with a RootFormula.");
-			break;
-		case LOG:
-			System.out.println("Can't use log with a RootFormula.");
-			break;			
-		case LOOKUP:
-			System.out.println("Can't use lookup with a RootFormula.");
-			break;
-		case CONSTANT:
-			System.out.println("Can't use a constant as a RootFormula.");
-			break;
-		}
-		m_valueComputed = true;		
-		return m_value;
-	}
-	
-	
-	
 	/**
 	 * Propagates gradient down the formula.
 	 * @param inc_val 
@@ -410,11 +278,4 @@ public class RootLogFormula extends LogFormula {
 		}
 		m_gradientComputed = true;
 	}
-	
-	
-	
-	public boolean finishedData() {
-		return (m_lastDatumUsed == (m_owner.getNumTrainingExamples() - 1));
-	}
-	
 }

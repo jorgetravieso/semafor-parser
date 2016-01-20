@@ -21,14 +21,14 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds.graph;
 
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import edu.cmu.cs.lti.ark.util.ds.Pair;
-
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntHashSet;
 
 /**
  * Node in a tree structure. 
