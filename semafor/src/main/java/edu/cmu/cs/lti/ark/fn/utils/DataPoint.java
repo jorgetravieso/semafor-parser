@@ -36,7 +36,6 @@ import java.util.StringTokenizer;
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.util.Interner;
 import edu.cmu.cs.lti.ark.util.XmlUtils;
-import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.ds.Range;
 import edu.cmu.cs.lti.ark.util.ds.Range0Based;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
@@ -93,34 +92,6 @@ public class DataPoint
 		for(int j = 0; j < tokNums.length; j ++)
 			tokenNums[j] = new Integer(tokNums[j]);
 		Arrays.sort(tokenNums);
-	}
-	
-	/**
-	 * The inverse of processFrameLine(). Result does not include a trailing newline.
-	 * @param frameName
-	 * @param lexicalUnit
-	 * @param tokenNums
-	 * @param target
-	 * @param sentNum
-	 * @return
-	 * @see #processFrameLine(String)
-	 */
-	public static String makeFrameLine(String frameName, String lexicalUnit, int[] tokenNums, String target, int sentNum) {
-		String s = "";
-		s += frameName + "\t" + lexicalUnit + "\t";
-		for (int i=0; i<tokenNums.length; i++) {
-			s += ((i==0) ? tokenNums[i] : "_" + tokenNums[i]);
-		}
-		s += "\t" + target + "\t" + sentNum;
-		return s;
-	}
-	
-	protected static Pair<String,Integer> parseFrameNameAndSentenceNum(String frameLine) {
-		// A subset of the code in processFrameLine()
-		String[] toks = frameLine.split("\t");
-		String frameName = (String)Interner.globalIntern(toks[0]);
-		int sentNum = new Integer(toks[4]);
-		return new Pair<String,Integer>(frameName, sentNum);
 	}
 	
 	public DependencyParses getParses()

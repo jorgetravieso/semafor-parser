@@ -21,20 +21,20 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import de.saar.coli.salsa.reiter.framenet.FrameElement;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import de.saar.coli.salsa.reiter.framenet.FrameElement;
-
 import edu.cmu.cs.lti.ark.fn.utils.DataPointWithElements;
-import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
+import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.IFeatureExtractor;
-import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.ds.Range0Based;
 import edu.cmu.cs.lti.ark.util.ds.Range1Based;
-import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
+import edu.cmu.cs.lti.ark.util.ds.map.IntCounter;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 /**
  * Extract features for the parsing model. Based on FeatureExtractor for the
@@ -42,7 +42,6 @@ import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
  * 
  * @author Nathan Schneider (nschneid)
  * @since 2009-04-07
- * @see AlphabetCreation
  * @see CandidateFrameElementFilters
  * @see edu.cmu.cs.lti.ark.fn.identification.FeatureExtractor
  */
