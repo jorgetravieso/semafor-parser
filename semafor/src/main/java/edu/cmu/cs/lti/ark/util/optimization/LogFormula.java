@@ -101,14 +101,6 @@ public class LogFormula implements Serializable, Iterable<LogFormula> {
 		_creation_index = _n_instances;
 		initCommon();
 	}
-	public LogFormula(LDouble v, String name) {
-		m_name = name;
-		m_operation = Op.CONSTANT;
-		m_valueComputed = true;
-		m_value = new LDouble(v);
-		_creation_index = _n_instances;
-		initCommon();
-	}
 	public LogFormula(LDouble v) {
 		m_name = null;
 		m_operation = Op.CONSTANT;
@@ -122,14 +114,6 @@ public class LogFormula implements Serializable, Iterable<LogFormula> {
 		m_operation = Op.CONSTANT;
 		m_valueComputed = true;
 		m_value = new LDouble(ie);
-		_creation_index = _n_instances;
-		initCommon();
-	}
-	public LogFormula(double v) {
-		m_name = null;
-		m_operation = Op.CONSTANT;
-		m_valueComputed = true;
-		m_value = new LDouble(v);
 		_creation_index = _n_instances;
 		initCommon();
 	}
@@ -210,22 +194,6 @@ public class LogFormula implements Serializable, Iterable<LogFormula> {
 	}
 
 	/**
-	 * Since we changed the parameter values, resets flags indicating that 
-	 * we've already computed function and gradient values. 
-	 *
-	 */
-	public void changedParamValues() {
-		// reset isComputed flags
-		m_valueComputed = false;
-		m_gradientComputed = false;
-		accumulatedGradient = new LDouble(LDouble.IdentityElement.PLUS_IDENTITY);
-		inDegrees = 0;
-		//System.out.println(m_args.size());
-		for (int i = 0; i < m_args.size(); i++) {
-			m_args.get(i).changedParamValues();
-		}
-	}
-		
 	/**
 	 *  For lookup formulas, goes into the appropriate data structure and returns the value. 
 	 */
@@ -236,12 +204,6 @@ public class LogFormula implements Serializable, Iterable<LogFormula> {
 	void lookup_backprop(LogModel m, LDouble ld) {
 		System.out.println("can't call lookup_backprop on a non-lookup formula!");
 	}
-
-	public Op getOperation() {
-		return m_operation;
-	}
-	
-
 
 	public void reduceInDegree()
 	{
