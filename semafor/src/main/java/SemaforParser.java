@@ -31,7 +31,6 @@ public class SemaforParser {
         final String GRAPH_FILE = MODEL_DIR + "/sparsegraph.gz";
         final String STOPWORDS =  config.getSemaforResource("stopwords.txt").getPath();
         final String WORDNET_CONFIG_FILE = config.getSemaforResource("file_properties.xml").getPath();
-        final String tempFolder = "/Users/ramini/Desktop";
         String[] FNArgs;
         FNArgs = new String[]{
                 "stopwords-file:"+STOPWORDS,
@@ -40,10 +39,7 @@ public class SemaforParser {
                 "goldsegfile:null",
                 "userelaxed:no",
                 "idmodelfile:" + MODEL_DIR + "/idmodel.dat",
-                "alphabetfile:" + MODEL_DIR + "/parser.conf",
                 "framenet-femapfile:" + MODEL_DIR + "/framenet.frame.element.map",
-                "eventsfile:" + tempFolder + "fnm.events.bin",
-                "spansfile:" + tempFolder + "fnm.spans",
                 "model:" + MODEL_DIR + "/argmodel.dat",
                 "useGraph:" + GRAPH_FILE,
                 "requiresmap:" + MODEL_DIR + "/requires.map",

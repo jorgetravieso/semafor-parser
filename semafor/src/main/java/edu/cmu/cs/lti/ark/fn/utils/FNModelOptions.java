@@ -113,9 +113,6 @@ public final class FNModelOptions extends CommandLineOptions
 
 	public StringOption outputPredicatesFile = new StringOption("predicatesfile");
 	public StringOption useGraph = new StringOption("useGraph");
-	public StringOption mstServerMode = new StringOption("mstmode");
-	public StringOption mstServerName = new StringOption("mstserver");
-	public IntOption mstServerPort = new IntOption("mstport");
 	public StringOption goldSegFile = new StringOption("goldsegfile");
 	public StringOption requiresMapFile = new StringOption("requiresmap");
 	public StringOption excludesMapFile = new StringOption("excludesmap");
