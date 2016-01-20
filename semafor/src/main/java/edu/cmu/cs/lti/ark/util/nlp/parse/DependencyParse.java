@@ -24,10 +24,7 @@ package edu.cmu.cs.lti.ark.util.nlp.parse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import edu.cmu.cs.lti.ark.util.Interner;
-import edu.cmu.cs.lti.ark.util.ds.Range0Based;
 import edu.cmu.cs.lti.ark.util.ds.graph.IndexComparator;
 
 
@@ -83,66 +80,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		}
 		sentence=sentence.trim();
 	}	
-	
-	/**
-	 * @param parts An array of five strings, each having \t separated tokens: <ul>
-	 *  <li>parts[0] are the actual words</li>
-	 * 	<li>parts[1] are the POS tags</li>
-	 * 	<li>parts[2] are the syntactic labels</li>
-	 * 	<li>parts[3] are the parents</li>
-	 * 	<li>parts[4] are the NE tags</li></ul>
-	 *  <li>parts[5] are the lemmas (from WordNet)</li></ul>
-	 * @param logProb Pass 0 if you don't want to use it
-	 */
-	public static DependencyParse[] buildParseTrees(String[] parts, double logProb)
-	{
-		String[][][] parseData = initFive(parts);
-		return process(parseData,logProb);
-	}
-	
-	/**
-	 * Returns a 3-dimensional array for the sentence:
-	 *  - The 1st dimension indexes the word within the sentence
-	 *  - The 2nd dimension indexes the type of annotation for the word (0 for the word, 1 for its POS, etc.)
-	 *  - The 3rd dimension indexes the annotation series; e.g., if there is a k-best list of POS taggings of the sentence, 
-	 *  	[0][1][0] will refer to the first word's POS tag in the best tagging, [0][1][1] in the second-best tagging, etc. 
-	 *  	The first form of annotation (words) is assumed to have only 1 series.
-	 * @param parts See {@link #buildParseTree(String[], double)}
-	 * @return
-	 */
-	public static String[][][] initFive(String[] parts)
-	{
-		if(parts.length!=6)
-		{
-			System.err.println("Problem. Size of input array should be 5.");
-			System.exit(0);
-		}
-		StringTokenizer st;
-		st = new StringTokenizer(parts[0],"\t");
-		int count = st.countTokens();
-		String[][][] parseData = new String[count][6][];
-		for(int p = 0; p < 6; p ++)
-		{
-			String[] series = parts[p].split("\t\\|\\|\t");	// series are separated by \t|\t
-			
-			for (int j=0; j<count; j++)
-				parseData[j][p] = new String[series.length];
-			
-			for (int s=0; s<series.length; s++) {
-				st = new StringTokenizer(series[s],"\t");
-				if(st.countTokens()!=count) {
-					System.err.println("Problem. Count of line "+p+" (" + st.countTokens() + ") not equal to zeroth line (" + count + ").");
-					System.exit(0);
-				}
-				
-				// Iterate through words and update with this annotation series
-				for(int j=0; j<count; j++) {
-					parseData[j][p][s] = (String)Interner.globalIntern(st.nextToken());
-				}
-			}
-		}
-		return parseData;
-	}
 	
 	/**
 	 * Generates DependencyParse instances from string representations returned from a parser.
@@ -319,22 +256,6 @@ public class DependencyParse extends ParseNode<DependencyParse>
 		nodeList.toArray(parseArray);
 		Arrays.sort(parseArray, new IndexComparator());
 		return parseArray;
-	}
-	
-	/**
-	 * @param parseNodes All the nodes in the parse
-	 * @param span Span of nodes whose common "head" is to be found
-	 * @return "Head" node of the span
-	 * @see #getHeuristicHead(Range0Based)
-	 * @see #getHeuristicHead(DependencyParse[], int[])
-	 */
-	public static DependencyParse getHeuristicHead(DependencyParse[] parseNodes, Range0Based span) {
-		int[] tokenNums = new int[span.length()];
-		for(int i = 0; i < tokenNums.length; i ++)
-		{
-			tokenNums[i] = span.getStart()+i;
-		}
-		return DependencyParse.getHeuristicHead(parseNodes, tokenNums);
 	}
 	
 	/**

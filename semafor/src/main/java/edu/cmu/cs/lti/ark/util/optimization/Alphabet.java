@@ -63,21 +63,6 @@ public class Alphabet implements Serializable
 			return "<UNK>";
 	}
 
-	/**
-	 * Adds given String to this Alphabet if it has not already been added. It is assigned 
-	 * a new unique ID equal to the new size of the Alphabet after performing the addition.  
-	 * @param s String to add
-	 */
-	public void addString(String s) {
-		String ss = m_interner.intern(s);
-		if (!m_encode.containsKey(ss)) {
-			m_encode.put(ss, m_decode.size());
-			m_decode.add(ss);
-			//m_decode.add(ss);
-			//m_encode.put(ss, m_decode.size());
-		}
-	}
-
 	public boolean checkString(String s) {
 		String ss = m_interner.intern(s);
 		if (m_encode.containsKey(ss)) {
@@ -107,9 +92,6 @@ public class Alphabet implements Serializable
 		return ind;		
 	}
 	
-	public ArrayList<String> getEntries()
-	{
-		return m_decode;
-	}
+
 } 
 

@@ -21,8 +21,6 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import java.util.List;
-
 /**
  * Leaf node of the formula graph, for representing a parameter.
  * 
@@ -89,17 +87,6 @@ public class LazyLookupLogFormula extends LogFormula {
 	}
 
 	@Override
-	void getParametersAux(List<LazyLookupLogFormula> runningList) {
-		runningList.add(this);
-	}
-	
-	@Override
-	void getParameterIndicesAux(List<Integer> runningList,List<String> sList) {
-		if(runningList.indexOf(m_index)<0)
-			runningList.add(m_index);
-	}
-	
-	@Override
 	public synchronized void backprop(LogModel m, LDouble inc_val) {	// synchronized since this formula may be shared by multiple data points
 		super.backprop(m, inc_val);
 	}
@@ -137,35 +124,6 @@ public class LazyLookupLogFormula extends LogFormula {
 		//m_owner.gradient(index) = logplus(owner->gradient(index), inc_val); 
 	}
 
-	@Override
-	void lookup_backpropLogValues(LogModel m, LDouble inc_val) {
-		if (0==0)
-			throw new RuntimeException("LazyLookupLogFormula.lookup_backpropLogValues(): Unsupported? Not sure if this is obsolete. -nschneid");
-		/*LDouble currentGradient = m.getGradient(m_index);
-		// add inc_val "in place"
-		LogMath.logplus(currentGradient, inc_val, currentGradient);
-		m_gradient = currentGradient;*/
-
-		LDouble currentGradient = m.getGradient(m_index);
-		if (currentGradient != null) {
-			LDouble val = m.getValue(m_index);
-			LogMath.logtimes(inc_val, val, m_tempLDouble3);
-			// add inc_val "in place"
-			LogMath.logplus(currentGradient, m_tempLDouble3, currentGradient);
-			m_gradient.reset(currentGradient);
-		} else {
-			//System.out.println("Null LDouble gradient encountered for param " + m_index);
-			LDouble newGradient = new LDouble();
-			LDouble val = m.getValue(m_index);
-			LogMath.logtimes(inc_val, val, newGradient);
-			m.setGradient(m_index, newGradient);
-			m_gradient.reset(newGradient);
-		}
-		//System.out.print("" + m_owner.getGradient(m_index));
-		//System.out.println();
-		//m_owner.gradient(index) = logplus(owner->gradient(index), inc_val); 
-	}
-	
 	@Override
 	public String treeToString(LogModel m, boolean showFormulas, int dummy) {
 		if (!showFormulas)

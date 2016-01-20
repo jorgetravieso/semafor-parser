@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Random;
 
 import edu.cmu.cs.lti.ark.util.optimization.LDouble.IdentityElement;
-import riso.numerical.LBFGS;
 
 /**
  * Defines a logistic regression model for determining whether two sentences from 
@@ -106,23 +105,6 @@ public class LogLogisticRegressionModel extends LogModel{
 	}	
 	
 
-	protected double classifyDev()
-	{
-		int numCorrect = 0;
-		for (int j = 0; j < m_devData.size(); j++) {
-			TDoubleArrayList currDatum = m_devData.get(j);
-			// classify using current weights
-			double pos = generateTestVal(currDatum);
-			pos = new LDouble(pos).exponentiate();
-			if ((pos >= 0.5 && m_devLabels.get(j) == 1) || (pos < 0.5 && m_devLabels.get(j) == -1)) {
-				numCorrect++;
-			}
-		}
-		double acc = ((double)numCorrect) / ((double)m_devData.size());
-		System.out.println("Dev: " + numCorrect + " / " + m_devData.size() + " = " + acc);
-		return acc;
-	}	
-
 
 	protected double classifyTest()
 	{
@@ -141,27 +123,7 @@ public class LogLogisticRegressionModel extends LogModel{
 		return acc;
 	}	
 
-	public double classifyRavine(String outputFile)
-	{
-		setParametersWhileTest(outputFile);
-		int correct = 0;
-		for (int j = 0; j < m_testData.size(); j++) {
-			TDoubleArrayList currDatum = m_testData.get(j);
-			// classify using current weights
-			double pos = generateTestVal(currDatum);
-			pos = new LDouble(pos).exponentiate();
-			System.out.println(pos);
-			if(pos>=0.5&&m_testLabels.get(j)==1)
-				correct++;
-			if(pos<0.5&&m_testLabels.get(j)==-1)
-				correct++;
-		}
-		double acc = (double)correct/m_testData.size();
-		System.out.println("Accuracy="+acc);
-		return 0;
-	}	
-	
-	
+
 
 	protected LogFormula getNextFormula() {
 		m_currentTrainingExample++;
@@ -313,21 +275,7 @@ public class LogLogisticRegressionModel extends LogModel{
 		return f;
 	}	
 
-	/***********************************************************************************************/
-	/***********************************************************************************************/
-	/***************************** Constructors and Initialization Code ****************************/
-	/***********************************************************************************************/
-	/***********************************************************************************************/
-	/**
-	 * Constructor which takes filenames containing 
-	 * @param phrasePairFilename File containing phrase pairs (with alignments) for defining support of other parameters
-	 */
-	public LogLogisticRegressionModel(String xfile, String xdevfile, String xtestfile) {
-		initializeParameterIndexes();
-		loadTrainingData(xfile, m_trainingData, m_trainingLabels);
-		loadTrainingData(xtestfile, m_testData, m_testLabels);
-		loadTrainingData(xdevfile, m_devData, m_devLabels);
-	}
+
 
 	public LogLogisticRegressionModel(String xtestfile, String testOrTrain) {
 		initializeParameterIndexes();
@@ -338,10 +286,6 @@ public class LogLogisticRegressionModel extends LogModel{
 	}
 	
 	
-	protected void printInfo(String modelName, String file1, String file2, String labels) {
-		System.out.println("Initialized " + modelName + " from files: " + file1);
-		System.out.println("Total number of strings stored: " + A.getNumEntries());
-	}
 
 	protected void initializeParameterIndexes() {
 		A = new Alphabet();
@@ -429,55 +373,9 @@ public class LogLogisticRegressionModel extends LogModel{
 		}
 	}
 
-	public void printGradients()
-	{
-		for(int i = 0; i < numParams; i ++)
-		{
-			System.out.println(G[i+1].exponentiate());
-		}
-		System.out.println();
-	}
 
 
-	public void printValues()
-	{
-		for(int i = 0; i < numParams; i ++)
-		{
-			System.out.println(V[i+1].exponentiate());
-		}
-		System.out.println();
-	}
 
-
-	public double[] getGradient(boolean op,boolean maximize,LDouble l_value)
-	{
-		int numTrainingExamples = getNumTrainingExamples();
-		for(int i = 0; i < numParams; i ++)
-		{
-			G[i+1].reset(IdentityElement.PLUS_IDENTITY);
-		}
-		//times
-		if(op)
-		{
-			
-		}
-		//plus
-		else
-		{
-			for(int i = 0; i < numTrainingExamples; i ++)
-			{
-				LogFormula f = getFormula(i);
-				f.backprop(this, new LDouble(LDouble.IdentityElement.TIMES_IDENTITY));
-			}
-		}
-		double[] g = new double[numParams];
-		
-		for(int i = 0; i < numParams; i ++)
-		{
-			g[i] = transformGradient(i,maximize);
-		}		
-		return g;
-	}
 	
 	public double transformGradient(int i,boolean maximize)
 	{
@@ -505,13 +403,6 @@ public class LogLogisticRegressionModel extends LogModel{
 		}
 	}	
 
-	public void setValuesDashed(double[] values)
-	{
-		for(int i = 0; i < numParams; i ++)
-		{
-			V[i+1] = new LDouble(values[i]);
-		}
-	}
 
 	public void saveParameters(String outputFile)
 	{
@@ -531,70 +422,7 @@ public class LogLogisticRegressionModel extends LogModel{
 		}
 	}
 	
-	public void setParametersWhileTest(String paramFile)
-	{
-		try
-		{
-			BufferedReader bReader = new BufferedReader(new FileReader(paramFile));
-			String line = null;
-			int count = 0;
-			while((line=bReader.readLine())!=null)
-			{
-				String[] arr = line.trim().split("\t");
-				V[count+1]=new LDouble(new Double(arr[1]),new Boolean(arr[2]).booleanValue());
-				count++;
-			}
-			bReader.close();
-		}
-		catch(IOException e)
-		{
-			
-		}
-	}	
-	
-	public double[] runBatchSGA(String paramFile)
-	{
-		double[] m_estimate = new double[numParams];
-		int trainingSize = m_trainingData.size();
-		int countPasses = 0;
-		int maxPasses = 1000;
-		
-		boolean maximize = true;
-		LogFormula.Op Type = LogFormula.Op.PLUS;
-		RootLogFormula fullLogLike = new RootLogFormula(this,Type,"lazyroot");
-		while(countPasses<maxPasses)
-		{
-			for(int index = 0; index < trainingSize; index++)
-			{
-				for(int i = 0; i < numParams; i ++)
-				{
-					G[i+1].reset(IdentityElement.PLUS_IDENTITY);
-				}
-				LogFormula f = this.getFormula(index);
-				f.backprop(this, new LDouble(LDouble.IdentityElement.TIMES_IDENTITY));
-				double[] g = new double[numParams];
-				for(int i = 0; i < numParams; i ++)
-				{
-					g[i] = transformGradient(i,maximize);
-				}
-				double[] v = getValues();
-				v = SGA.updateGradient(v, g);	
-				setValues(v);
-			}
-			countPasses++;
-			LDouble l_value = fullLogLike.evaluate(this);
-			double m_value = this.extractFunctionValueForLBFGS(l_value, maximize);
-			System.out.println("Function value:"+m_value+"\n");
-			fullLogLike.changedParamValues();
-			saveParameters(paramFile);
-			classify();			
-		}		
-		saveParameters(paramFile);
-		classify();
-		return m_estimate;
-	}
-	
-	
+
 	public double[] runTotallyRandomSGA(String paramFile)
 	{
 		double[] m_estimate = new double[numParams];
@@ -647,49 +475,6 @@ public class LogLogisticRegressionModel extends LogModel{
 		return m_estimate;
 	}
 	
-	public double[] runCustomLBFGS (String paramFile) throws Exception
-	{    
-		LogFormula.Op Type = LogFormula.Op.PLUS;
-		RootLogFormula fullLogLike = new RootLogFormula(this,Type,"lazyroot");		
-		double[] diagco = new double[numParams];
-		int[] iprint = new int[2];
-		iprint[0] = m_debug?1:-1;  //output at every iteration (0 for 1st and last, -1 for never)
-		iprint[1] = 0; //output the minimum level of info
-		int[] iflag = new int[1];
-		iflag[0] = 0;
-		double[] gradient = new double[numParams];
-		double[] m_estimate = new double[numParams];
-		int iteration = 0;
-		boolean maximize = true;
-		do {
-			LDouble l_value = fullLogLike.evaluate(this);
-			double m_value = this.extractFunctionValueForLBFGS(l_value, maximize);
-			System.out.println("Function value:"+m_value);
-			gradient = getGradient(false,maximize,l_value);
-			m_estimate = getValues();	
-			LBFGS.lbfgs(numParams,
-					m_num_corrections, 
-					m_estimate, 
-					m_value,
-					gradient, 
-					false, //true if we're providing the diag of cov matrix Hk0 (?)
-			diagco, //the cov matrix
-			iprint, //type of output generated
-			m_eps,
-			xtol, //estimate of machine precision
-			iflag //i don't get what this is about
-			);
-			setValues(m_estimate);
-			iteration++;
-			fullLogLike.changedParamValues();
-			m_currentTrainingExample=0;
-			if(iteration%20==0)
-			{	classify();
-			}
-		} while (iteration <= m_max_its&&iflag[0] != 0);
-		saveParameters(paramFile);
-		classify();
-		return m_estimate;
-	}
+
 
 }
