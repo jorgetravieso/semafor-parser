@@ -8,6 +8,25 @@
     <artifactId>semafor-deps</artifactId>
     <version>0.0.3</version>
 
+    <organization>
+        <name>IPsoft, Inc.</name>
+        <url>http://www.ipsoft.com</url>
+    </organization>
+
+    <scm>
+        <connection>scm:git:git@git.ipsoft.com:ameliang.git</connection>
+    </scm>
+
+
+    <distributionManagement>
+        <repository>
+            <id>internal</id>
+            <name>IPsoft Internal repository</name>
+            <url>http://m2.ipsoft.com/repository/internal</url>
+        </repository>
+    </distributionManagement>
+
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.opennlp</groupId>
