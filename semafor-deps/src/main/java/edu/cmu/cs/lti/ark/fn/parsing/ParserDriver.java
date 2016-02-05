@@ -35,9 +35,9 @@ import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
-import gnu.trove.set.hash.THashSet;
+import gnu.trove.THashMap;
+import gnu.trove.TObjectDoubleHashMap;
+import gnu.trove.THashSet;
 
 public class ParserDriver {
 

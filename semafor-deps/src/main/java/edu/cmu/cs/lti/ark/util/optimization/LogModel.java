@@ -14,7 +14,7 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.TObjectDoubleHashMap;
 
 import java.util.ArrayList;
 

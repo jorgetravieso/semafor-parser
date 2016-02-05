@@ -14,11 +14,11 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
-import gnu.trove.map.hash.THashMap; // THashMap;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.THashMap; // THashMap;
+import gnu.trove.THashSet;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectDoubleHashMap;
+import gnu.trove.TObjectIntHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;

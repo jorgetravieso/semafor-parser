@@ -14,7 +14,7 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
-import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.TObjectDoubleHashMap;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

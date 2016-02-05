@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.cmu.cs.lti.ark.util.Interner;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.TObjectIntHashMap;
 
 public class Alphabet implements Serializable {
     /**

@@ -14,9 +14,9 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds.map;
 
-import gnu.trove.iterator.TObjectIntIterator;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectIntProcedure;
+import gnu.trove.TObjectIntIterator;
+import gnu.trove.TObjectIntHashMap;
+import gnu.trove.TObjectIntProcedure;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,7 +49,7 @@ public class IntCounter<T> extends AbstractCounter<T, Integer> implements java.i
     public IntCounter(TObjectIntHashMap<T> map) {
         m_map = map;
 
-        int vals[] = map.values();
+        int vals[] = map.getValues();
         for (int val : vals) {
             m_sum += val;
         }

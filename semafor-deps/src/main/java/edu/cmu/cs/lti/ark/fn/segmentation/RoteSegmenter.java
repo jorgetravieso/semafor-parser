@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
-import gnu.trove.set.hash.THashSet;
+import gnu.trove.THashSet;
 
 public class RoteSegmenter {
     public static final int MAX_LEN = 4;

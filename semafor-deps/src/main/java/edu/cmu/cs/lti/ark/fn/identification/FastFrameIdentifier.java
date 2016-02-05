@@ -15,10 +15,10 @@
 package edu.cmu.cs.lti.ark.fn.identification;
 
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectDoubleHashMap;
 
 import java.util.Arrays;
 import java.util.Map;

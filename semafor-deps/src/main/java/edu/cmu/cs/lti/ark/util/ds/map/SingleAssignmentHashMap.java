@@ -15,7 +15,7 @@
 package edu.cmu.cs.lti.ark.util.ds.map;
 
 
-import gnu.trove.map.hash.THashMap;
+import gnu.trove.THashMap;
 
 /**
  * A hash map whose {@link #put(Object, Object)} method prohibits (for safety's sake) setting a new value for a key whose current

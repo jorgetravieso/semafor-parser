@@ -14,8 +14,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.wordnet;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
 import net.didion.jwnl.data.POS;
 
 import java.io.BufferedReader;
