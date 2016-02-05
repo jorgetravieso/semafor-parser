@@ -1,0 +1,99 @@
+#
+# rules for quantifiers
+# @todo denote metavariables correctly.
+#
+all x p(x) |= p(a)	# universal specialization
+p(a) |= some x p(x)	# existential generalization
+## some x p(x) && ~occured(_a) |= p(_a)	# existential specialization (provided that _a is a new constant and has never occured yet)
+~(all x p(x)) |= some x ~p(x)	# ~all~ conversion (even |=|)
+~(all x ~p(x)) == some x p(x)	# ~all~ conversion (even |=|)
+~(some x p(x)) |= all x ~p(x)	# ~some~ conversion (even |=|)
+~(some x ~p(x)) == all x p(x)	# ~some~ conversion (even |=|)
+all x (p(x)->q(x)) |= (all x p(x)) -> (all x q(x))
+# some rules
+some x (p(x) & q(x)) |= (some x p(x)) & (some x q(x))
+#=# no e-resolution or paramodulation yet
+#=#  (all y ((some x R(x,y)) & (some x all z (R(z,y)->(z=x))))) == (all y (some x (R(x,y) & (all z (R(z,y)->(z=x))))))	# there is at least one and at most one, is equivalent to there is exactly one
+#
+# axioms of set theory
+#
+# unique determination of "="
+#=#  |= all x (x=x)		# ID1 axiom of identity. "=" reflexive
+#=#  |= all x all y ((x=y) -> (p(x) -> p(y))) # ID2 principle of substitution (more general form: P(x) is an arbitrary formula containing the constant x, and P(y) = P(x)[x->y] is the result of a substitution of x by y)
+#=#  (a=b) && p(a) |= p(b)	# (specialized formulation)
+#|= all M all N all x (x&isin;M <=> x&isin;N) -> M=N)	# EXT axiom of extensionality
+#|= all M some N N = {x&isin;M | p(x)}	# AUS "Aussonderungsaxiome"
+#|= all M some N all L (L&sube;M -> L&isin;N)	# POT axiom of potence set
+#|= all M all N some L all x(x&isin;M | x&isin;N -> x&isin;L)	# &cup;-Ax axiom of union
+# derived properties
+#=#  |= all x all y ((x=y) -> (y=x))	# "=" symmetric
+#=#  |= all x all y all z ((x=y) & (y=z) -> (x=z))	# "=" transitive
+#=#  |= all x all y all z ((x=z) & (y=z) -> (x=y))	# "=" euclidian
+#
+# definitions
+#
+#N&sube;M := all x(x&isin;N -> x&isin;M)
+#N&supe;M := M&sube;N
+#|= all M all N (M=N <=> M&sube;N & N&sube;M)
+#|= all M M&sube;M
+#|= all x x&notin;&empty;
+#|= all M &empty;&sube;M
+
+#
+# diverse
+#
+|= ~some x (P(x)&~P(x))				# Law of noncontradiction with P being a metavariable [Fitting 1998, 7.3, p145]
+#=#|= (x=y) => (P(x)<->P(y))				# Indiscernibility of Identicals
+#=#|= (x=y) => (P(x)->P(y))				# Leibniz's Law
+
+#
+# some relational implications
+# @see Relations.html
+
+# r asymmetric => r irreflexive
+all a all b (r(a,b) => ~r(b,a)) |= all a ~r(a,a)
+# r transitive and irreflexive => r asymmetric
+(all a all b all c (r(a,b)&r(b,c)=>r(a,c))) && (all a ~r(a,a)) |= all a all b (r(a,b)=>~r(b,a))
+# r symmetric => (r Euclidean <=> r transitive)
+## all a all b (r(a,b)=>r(b,a)) |= (all a all b all c (r(a,c)&r(b,c)->r(a,b))) <-> (all a all b all c (r(a,b)&r(b,c)->r(a,c))) # @attribute time >10hours
+# r reflexive and Euclidean <=> r equivalence
+#   "<=" r equivalence => r reflexive and Euclidean
+###### all a r(a,a) && all a all b (r(a,b)=>r(b,a)) && all a all b all c (r(a,b)&r(b,c)=>r(a,c)) |= (all a r(a,a)) & (all a all b all c (r(a,c)&r(b,c)=>r(a,b)))
+#   "=>" r reflexive and Euclidean => r equivalence
+#   "=>" (1) r reflexive and Euclidean => r reflexive
+all a r(a,a) && all a all b all c (r(a,c)&r(b,c)=>r(a,b)) |= all a r(a,a)
+#   "=>" (2) r reflexive and Euclidean => r symmetric
+all a r(a,a) && all a all b all c (r(a,c)&r(b,c)=>r(a,b)) |= all a all b (r(a,b) => r(b,a))
+#   "=>" (3) r reflexive and Euclidean => r transitive
+#   "=>" (3a)r reflexive and Euclidean => r transitive Using (2) as a lemma
+all a r(a,a) && all a all b all c (r(a,c)&r(b,c)=>r(a,b)) && all a all b (r(a,b) => r(b,a)) |= all a all b all c (r(a,b)&r(b,c)=>r(a,c))
+#   "=>" (3) r reflexive and Euclidean => r transitive
+all a r(a,a) && all a all b all c (r(a,c)&r(b,c)=>r(a,b)) |= all a all b all c (r(a,b)&r(b,c)=>r(a,c))
+#   "=>" (1+2+3) r reflexive and Euclidean => r equivalence
+###@xxx out-of-time all a r(a,a) && all a all b all c (r(a,c)&r(b,c)=>r(a,b)) |= (all a r(a,a)) & (all a all b (r(a,b) => r(b,a))) & (all a all b all c (r(a,b)&r(b,c)=>r(a,c)))
+
+#
+# quantifier Logic Square
+#
+# °x A	 --contrary---	°x ~A==~?x A
+#   |	     contra	  |
+#   v	     dictory	  v
+# ?x A	-sub contrary-	?x ~A==~°x A
+
+
+# top left to down left sub alternative
+|= all x A -> some x A
+# top right to down right sub alternative
+|= ~ (some x A) -> ~(all x A)
+# top left to top right contrary (not both true)
+|= ~((all x A) & (all x ~A))
+# down left to down right sub contrary (not both false)
+|= (some x A) | ~(all x A)
+# top left to down right contradictory
+|= (all x A) <=>~( some x ~A )
+# down left to top right contradictory
+|= (some x A) <=>~( all x ~A )
+
+# thereby note
+all x ~A == ~some x A
+some x ~A == ~all x A

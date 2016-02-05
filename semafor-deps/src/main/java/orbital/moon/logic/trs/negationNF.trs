@@ -1,0 +1,15 @@
+#@xxx note that the  _Xi should be metavariables for formulas
+# involution duplex negatio est affirmatio
+~~_X |- _X
+# deMorgan
+~(_X1|_X2) |- ~_X1&~_X2
+~(_X1&_X2) |- ~_X1|~_X2
+# exported to CNFeliminate
+# negated implication
+# s.a. ~(_X1->_X2) |- _X1&~_X2
+# negated equivalence
+# s.a. ~(_X1<->_X2) |- (~_X1)<->_X2
+# negated all-quantifier
+~(all _V _X) |- some _V ~_X
+# negated exists-quantifier
+~(some _V _X) |- all _V ~_X

@@ -1,0 +1,49 @@
+#
+# contains false conjectures
+# 
+true == (a&b<=>a) => (a|(b&c)<=>(a|b)&c)	# modular a=<b implies a|(b&c)<=>(a|b)&c
+a|b == a
+a&b == b
+a&b == b|a
+a|b == b&a
+(a&b)&c == a&(b|c)
+a&(a|b) == b
+a|(a&b) == a&b
+~(~a) == ~a
+~(a&b) == ~a&~b
+~(a|b) == ~a|~b
+a |= b
+#a |= ~a
+a->b == ~a->~b
+a->b == ~a&b
+a<=>b == (a->~b)&(~b->a)
+a|~a == b->~b
+(a=>b)=>c == a=>(b=>c)				# non-associative
+a=>(b=>c) == (a=>b) && (b=>c)
+a=>(b=>c) == (a=>b) || (b=>c)
+a->b == b->a					# direction matters
+
+c->(a^b) == (c->a)<->(c->b)	# distributive -> over ^
+(a<->b)->c == (a->c)^(b->c)	# codistributive -> over <->
+(a<->b)->c == (a->c)<->(b->c)	# distributive -> over <->
+
+a->!b == a ^ b
+a->!b == a <-> !b
+
+
+#
+# false first-order conjectures
+#
+$x p(x) |= q(a) | ~p(a)
+p(x) |= q(x)
+some x p(x) |= all x p(x)
+q(x) && (p(x)->q(x)) |= p(x)
+~(a->b) == ~a&b
+##@xxx no time (some x p(x)) & (some x q(x)) |= some x (p(x)&q(x))
+##@xxx no time all x (p(x) | q(x)) |= (all x p(x)) | (all x q(x))
+##all x p(x) == some x p(x)		# @xxx time >3h
+
+#
+# Some test cases
+#
+p(a,c) && (all x all y all y (l(x,y)&l(y,z)->p(x,y,z))) |= all x all y l(x,y)	# test case for bug fixed in ClauseImpl 1.7

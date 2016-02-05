@@ -1,0 +1,165 @@
+#
+# huntington axioms of boolean algebraic logic
+#
+a&b == b&a		# commutative (Huntington axiom)
+a|b == b|a		# commutative (Huntington axiom)
+(a&b)|c == (a|c)&(b|c)	# distributive (Huntington axiom)
+(a|b)&c == (a&c)|(b&c)	# distributive (Huntington axiom)
+a&true == a		# neutral element (Huntington axiom)
+a|false == a		# neutral element (Huntington axiom)
+##inconsistent a&~a == false		# complement (Huntington axiom) induces Principium contradictionis
+a|~a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
+#
+# laws derived from huntington axioms
+#
+(a&b)&c == a&(b&c)	# associative
+(a|b)|c == a|(b|c)	# associative
+a&a == a		# idempotent
+a|a == a		# idempotent
+a&(a|b) == a		# absorbtion
+a|(a&b) == a		# absorbtion
+a|(a&b) == a		# (Verschmelzung...) <=(a),(c),(idem)
+a&(a|b) == a		# (Verschmelzung...)
+##inconsistent ~(~a) == a		# involution "duplex negatio est affirmatio". (induces duality forall a exists b: b = ~a. dualities: a ~a, & |)
+~(a&b) == ~a|~b		# deMorgan
+~(a|b) == ~a&~b		# deMorgan
+##inconsistent a&false == false	# (dual to neutral element)
+##inconsistent a|true == true		# (dual to neutral element)
+#
+# additional equivalences
+#
+a->b == ~b->~a		# contra positition [Lex contrapositionis]
+a->b == ~a|b		# material implication
+~(a->b) == a&~b
+a->b == ~(a&~b)
+a<->b == b<->a		# commutative
+## (a<->b)<->c == a<->(b<->c)	# associative
+a<->b == (a->b)&(b->a)	# coimplication (alias '<->' introduction or elimination)
+a<->b == (a&b)|(~a&~b)	# equivalence in DNF
+a<->b == (a|~b)&(~a|b)	# equivalence in CNF
+a^b == ~(a<->b)
+a^b == a&~b | ~a&b	# antivalence in DNF
+a^b == (a|b) & (~a|~b)	# antivalence in CNF
+##inconsistent a^a == false
+## @fixme substitutionBug (a^b)^c == a^(b^c)	# associative
+## (a^b)^c == a<->b<->c	#
+a&b->c == a->(b->c)	# exportation / importation [Lex exportationis, Lex importationis]
+~a == a->false		# not in INF
+#
+# some important tautologies from axioms
+#
+## contradiction query |= ~(a&~a)		# Principium contradictionis
+## contradiction query |= a | ~a		# Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
+## contradiction query |= a -> a		# self implication (c reflexive)
+#
+# implicative properties of |= and thus inference rules
+#
+(p->q) && p |= q		# Modus (ponendo) ponens	 (resp. assuming p->q, p is sufficient for q. repeated application is forward chaining)
+(p->q) && ~q |= ~p		# Modus (tollendo) tollens (resp. assuming p->q, q is necessary for p. repeated application is backward chaining)
+(p->q) && (q->r) |= p->r	# hypothetical "syllogism" Principle of Syllogism (due to affinity to mode Barbara)
+(p|q) && ~p |= q		# disjunctive "syllogism"
+p && q |= p&q		# conjunction
+p |= p|q		# weakening addition (alias '|' introduction)
+p&q |= p		# weakening subtraction (alias '&' elimination)
+a |= b->a		# weakening conditional
+(a->b) && (b->c) |= a->c	# transitivity
+(Gamma&p => a) && (Gamma&q->a) |= Gamma&(p|q) => a	# Dilemma rule, lowered from meta statements about |= to statements about implication =>
+#
+# tautological properties of == aka |=| (thus inference rules, as well)
+#
+p->~p == ~p
+(p->q) && (p->r) == p->q&r
+p->(q->r) == (p&q)->r	# chain rule
+p->(q->r) == (p&q)->r	# distribute
+p->(q->r) == (p->q)->(p->r)	# distributive
+# Rules for quantifiers
+# some rules
+p->(p->q) |= p->q	# rule of reduction
+p->(q->r) |= q->(p->r)	# Law of Permutation, the 'commutative principle' (Russel/Whitehead. Principia Mathematica. 1910, 99 *2.04)
+~p->p |= p		# consequentia mirabilis
+(p->r) && (q->s) |= p&q->r&s	# Praeclarum Theorema
+|= p->(q->p)		# principle of simplification (Russel/Whitehead. Principia Mathematica. 1910, 100 *2.03)
+##inconsistent |= p->p			# principle of identity (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.08)
+##inconsistent |= p->~~p		# Affirmatio est duplex negatio, principle of double negation (Russel/Whitehead. Principia Mathematica. 1910, 101 f)
+##inconsistent |= ~~p->p		# Duplex negatio est affirmatio, principle of double negation (Russel/Whitehead. Principia Mathematica. 1910, 101 f)
+##inconsistent false |= a		# 'ex falso quodlibet'
+#
+# some less important
+#
+# diverse
+p|q == ~p->q		# | as ~,->
+p&q == ~(p->~q)		# & as ~,->
+#inconsistent? ~p->p == p		# self proof
+p->~p |= ~p		# self contradiction
+(p->q) && (~p->q) |= q	# reasoning by cases
+~(p->q) == p&~q		# negative implication
+~(p<->q) == (p|q)&(~p|~q) # negative equivalence
+~(p<->q) == p<->~q
+p<->~q == ~p<->q
+p->q |= (p|r)->(q|r)
+(p->r) && (q->s) |= (p&q)->(r&s)	# Praeclarum Theorema
+(p->r) && (q->r) |= (p|q)->r
+|= (f->g) | (g->f)	# material implication has strange causal relations
+
+#
+#
+#
+a->!b == b->!a
+a->!b == (a->!b) & (b->!a)
+a ^ b == a <-> !b
+a ^ b == !(a <-> b)
+(a ^ b) | !a&!b == (a->!b) & (b->!a)
+
+#
+# definitions
+#
+##no e-resolution or paramodulation yet
+#=#   x!=y == ~(x=y)
+
+#
+# quantifiers
+#
+
+all x p(x) |= some x p(x)	# presupposition of existence 
+all x p(x) |= p(a)
+all x p(x) |= all y p(y)
+all x p(x) |= all x p(x)
+
+# rules for quantifiers
+# @todo denote metavariables correctly.
+#
+all x p(x) |= p(a)	# universal specialization
+## some x p(x) |= p(s)	# existential generalization # @todo does not work because we cannot declare s as constant.
+~(all x p(x)) |= some x ~p(x)	# ~all~ conversion (even |=|)
+~some x p(x) |= all x~p(x)	# ~some~ conversion (even |=|)
+all x (p(x)->q(x)) |= (all x p(x)) -> (all x q(x))
+# some rules
+(p(x) & q(x)) |= (p(x)) & (q(x))
+
+
+#
+# No more rules but only significant tests
+#
+all x p(x) |= all x p(f(x))		# variant renaming necessary
+all x all y (p(x) | p(y)) |= some u some v (p(u) & p(v))   # (initial) factorization necessary thus mere resolution without factorization is incomplete
+(all x (p(x) | r)) && (all x (p(f(x)) | ~r)) && (~p(f(a)) | s)  |= p(f(b)) & s   # (intermediate) factorization necessary? thus mere resolution without factorization is incomplete
+###@fixme p(0) && all x (p(x) -> p(s(x))) |=  some x p(s(s(s(s(x)))))  # some x p(s^2^n(x)) has a resolution of length n+5
+#
+# test cases for variable scope and that no variable renaming variant has been forgotten in the implementation
+#
+|= ~((all x p(x)) & (all x ~p(f(x))))
+|= ~((all x p(x)) & (all y ~p(f(y))))
+all x p(x) |= ~(all x ~p(f(x)))
+all x p(x) |= ~(all y ~p(f(y)))
+all x p(x) |= ~(some x ~p(f(x)))
+all x p(x) |= all x p(f(x))
+all x p(x) |= some x p(f(x))
+all x p(x) |= some y p(f(y))
+|= ~(all x (p(x) & ~p(f(x))))
+|= ~(all x all y (p(x) & ~p(f(y))))
+|= some x (~p(x) | p(f(x)))
+|= some x some y (~p(x) | p(f(y)))
+|= all x (p(x)&q(x)) -> some y (((p(y)|r)|q(a))&p(b))	# no premature closing in tableaus ([Beckert, Hähnle 2001 Automatisches Beweisen] p39)
+p(n) && (all x (p(x)->p(s(x)))) |= p(s(s(n)))		# fair choice of literals for closure needed for completeness ([Beckert, Hähnle 2001 Automatisches Beweisen] p45)
+|= ~((all x p(x)) & (q&~q))					# blind repeated expansion of gamma formulas destroys completeness ([Beckert, Hähnle 2001 Automatisches Beweisen] p45)
+p(a) && (all x ( (p(b)&b(c)->p(x)) -> ~(q(x)->q(b)|q(c)) )) |= q(d)	# blindly preferring closures destroys completeness ([Beckert, Hähnle 2001 Automatisches Beweisen] p45)
