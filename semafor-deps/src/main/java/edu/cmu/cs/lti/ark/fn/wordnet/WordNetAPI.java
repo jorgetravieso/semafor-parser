@@ -15,8 +15,8 @@
 package edu.cmu.cs.lti.ark.fn.wordnet;
 
 
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;

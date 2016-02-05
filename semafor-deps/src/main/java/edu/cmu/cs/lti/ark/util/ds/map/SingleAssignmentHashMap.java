@@ -14,8 +14,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds.map;
 
-import gnu.trove.THashMap;
-import gnu.trove.TObjectHashingStrategy;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * A hash map whose {@link #put(Object, Object)} method prohibits (for safety's sake) setting a new value for a key whose current
@@ -55,14 +55,6 @@ public class SingleAssignmentHashMap<K, V> extends THashMap<K, V> implements jav
 
     public SingleAssignmentHashMap(ReassignmentPolicy reassign) {
 
-    }
-
-    public SingleAssignmentHashMap(TObjectHashingStrategy<K> hashingStrategy) {
-        this(hashingStrategy, ReassignmentPolicy.ERROR);
-    }
-
-    public SingleAssignmentHashMap(TObjectHashingStrategy<K> hashingStrategy, ReassignmentPolicy reassign) {
-        super(hashingStrategy);
     }
 
     /**

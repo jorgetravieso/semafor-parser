@@ -14,13 +14,12 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import gnu.trove.TObjectIdentityHashingStrategy;
-import gnu.trove.TObjectIntHashMap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.cmu.cs.lti.ark.util.Interner;
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 public class Alphabet implements Serializable {
     /**
@@ -36,7 +35,7 @@ public class Alphabet implements Serializable {
 
     public Alphabet() {
         m_decode = new ArrayList<String>(ALPHABET_INITIAL_CAPACITY);
-        m_encode = new TObjectIntHashMap<String>(ALPHABET_INITIAL_CAPACITY, new TObjectIdentityHashingStrategy<String>());
+        m_encode = new TObjectIntHashMap<String>(ALPHABET_INITIAL_CAPACITY);
     }
 
     /**

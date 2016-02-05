@@ -14,6 +14,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.wordnet;
 
+import gnu.trove.map.hash.THashMap;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;

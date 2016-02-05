@@ -23,10 +23,25 @@
         <!-- http://java-performance.info/hashmap-overview-jdk-fastutil-goldman-sachs-hppc-koloboke-trove-january-2015/-->
         <!-- todo replaced trove collections api with fastutils -->
         <dependency>
-            <groupId>trove</groupId>
-            <artifactId>trove</artifactId>
-            <version>1.0.2</version>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.sf.jwordnet</groupId>
+            <artifactId>jwnl</artifactId>
+            <version>1.4_rc3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+
+
+
 
         <!--<dependency>-->
             <!--<groupId>it.unimi.dsi</groupId>-->

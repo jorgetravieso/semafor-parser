@@ -14,7 +14,7 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.optimization;
 
-import org.apache.hadoop.io.Writable;
+//import org.apache.hadoop.io.Writable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -27,7 +27,7 @@ import java.io.Serializable;
  *
  * @author Kevin Gimpel
  */
-public class LDouble implements Serializable, Writable {
+public class LDouble implements Serializable {
     /**
      *
      */

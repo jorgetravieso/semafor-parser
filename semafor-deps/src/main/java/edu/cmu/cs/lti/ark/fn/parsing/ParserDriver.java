@@ -17,9 +17,7 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
-import gnu.trove.TObjectDoubleHashMap;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +35,10 @@ import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.preprocess.PreprocessedText;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
-import lombok.extern.slf4j.XSlf4j;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.set.hash.THashSet;
 
-@XSlf4j
 public class ParserDriver {
 
     SmoothedGraph sg = null;
@@ -150,7 +149,7 @@ public class ParserDriver {
 
         }
 
-        log.info("Semafor classification takes {} ms.", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        System.out.println("Semafor classification takes " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " ms");
         return frames;
     }
 }

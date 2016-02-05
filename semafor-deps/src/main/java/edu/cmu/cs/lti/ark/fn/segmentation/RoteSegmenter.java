@@ -16,14 +16,13 @@ package edu.cmu.cs.lti.ark.fn.segmentation;
 
 import com.google.common.collect.Sets;
 
-import gnu.trove.THashSet;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
+import gnu.trove.set.hash.THashSet;
 
 public class RoteSegmenter {
     public static final int MAX_LEN = 4;

@@ -14,8 +14,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.identification;
 
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 import java.util.Arrays;
 import java.util.List;

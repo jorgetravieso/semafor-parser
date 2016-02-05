@@ -14,7 +14,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.util.ds;
 
-import gnu.trove.THashSet;
+
+import gnu.trove.set.hash.THashSet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
